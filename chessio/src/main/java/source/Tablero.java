@@ -16,8 +16,8 @@ public class Tablero {
             }
         }
     }
-    public void agregarAst(int i, int j){
-        tabla[i][j].setPieza(new Pieza('*'));
+    public void agregarPieza(int i, int j, char c){
+        tabla[i][j].setPieza(new Pieza(c));
         
     }
     

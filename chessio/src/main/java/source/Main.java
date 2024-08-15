@@ -10,10 +10,9 @@ package source;
  */
 public class Main {
     public static void main(String args[]){
-        Tablero t = new Tablero();
-        t.agregarAst(7,7);
-        t.agregarAst(3,2);
-        t.agregarAst(5,4);
-        t.imprimirTabla();
+        
+        Juego j = new Juego();
+        j.iniciarJuego();
+
     }
 }

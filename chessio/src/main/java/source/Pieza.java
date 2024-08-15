@@ -9,6 +9,8 @@ package source;
  * @author Windows
  */
 public class Pieza {
+    //private Jugador j
+    //private boolean valido
     private char signo;
     
     public Pieza(char s){
