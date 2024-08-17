@@ -42,7 +42,4 @@ public class Casilla {
         return pieza.getSigno() + "";
     }
 
-    
-
-    
 }

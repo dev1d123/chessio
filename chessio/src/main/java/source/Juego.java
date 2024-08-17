@@ -119,3 +119,7 @@ public class Juego {
     }
     
 }
+/*
+DRY -> Do not repeat yourself
+KISS -> Keep it short and simple
+*/
