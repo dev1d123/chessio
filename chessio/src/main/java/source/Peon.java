@@ -14,14 +14,13 @@ public class Peon extends Pieza implements PiezaInterfaz{
     
     //color 
     
-    public Peon(char s) {
-        super(s, "pieza");
+    public Peon(int x, int y, Player player) {
+        super(x, y, 'P', player);
     }
-
+    
     @Override
     public ArrayList<Pair> getMovimientos() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    
+        return null;
     }
 
     

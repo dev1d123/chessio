@@ -7,6 +7,7 @@ package source;
  */
 public class Casilla {
     private Pieza pieza;
+    //Crear una pieza...que represente a una casilla vacia
     private int x,y;
     
     public Casilla(int x, int y, Pieza pieza){

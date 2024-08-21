@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class Rey extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
-    public Rey(int x, int y) {
-        super(x, y, 'R');
+    public Rey(int x, int y, Player player) {
+        super(x, y, 'R', player);
     }
 
     @Override
@@ -47,9 +47,6 @@ public class Rey extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-    public static void main(String[] args){
-        Rey test = new Rey(4,4);
-        System.out.println(test.getM());
-    }
+
     
 }

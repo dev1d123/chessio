@@ -14,8 +14,8 @@ public class Torre extends Pieza implements PiezaInterfaz{
     
     //Inicia el juego y cuando se corona
     //x, y, signo
-    public Torre(int x, int y) {
-        super(x, y, 'T');
+    public Torre(int x, int y, Player player) {
+        super(x, y, 'T', player);
     }
 
     @Override
@@ -41,10 +41,7 @@ public class Torre extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-    public static void main(String[] args){
-        Torre test = new Torre(4,4);
-        System.out.println(test.getM());
-    }
+
     
     
   

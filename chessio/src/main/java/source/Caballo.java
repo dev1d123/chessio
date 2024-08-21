@@ -13,13 +13,13 @@ import java.util.ArrayList;
 public class Caballo extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
-    public Caballo(int x, int y) {
-        super(x, y, 'C');
+    public Caballo(int x, int y, Player player) {
+        super(x, y, 'C', player);
     }
 
     @Override
     public ArrayList<Pair> getMovimientos() {
-        ArrayList<Pair> res = new ArrayList<Pair>();
+        ArrayList<Pair> res = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int distancia = distanciaLineal(i, j);
@@ -73,9 +73,6 @@ public class Caballo extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-    public static void main(String[] args){
-        Caballo t = new Caballo(4, 4);
-        System.out.println(t.getM());
-    }
+
 }
 

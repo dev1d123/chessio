@@ -16,9 +16,12 @@ public class Tablero {
             }
         }
     }
-    public void agregarPieza(int i, int j, char c){
-        tabla[i][j].setPieza(new Pieza(c));
-        
+    
+    public void agregarCasilla(int i, int j){
+       tabla[i][j].setPieza(new Pieza('-'));
+    }
+    public void agregarPieza(Pieza p){
+        tabla[p.getX()][p.getY()].setPieza(p);
     }
     
     public void imprimirTabla(){

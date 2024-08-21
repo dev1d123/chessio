@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class Alfil extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
-    public Alfil(int x, int y) {
-        super(x, y, 'A');
+    public Alfil(int x, int y, Player player) {
+        super(x, y, 'A', player);
     }
 
     @Override
@@ -39,9 +39,6 @@ public class Alfil extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-    public static void main(String[] args){
-        Alfil test = new Alfil(4,4);
-        System.out.println(test.getM());
-    }
+
     
 }

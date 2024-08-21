@@ -12,24 +12,29 @@ public class Pieza {
     //private Jugador j
     //private boolean valido
     private char signo;
-    private String color;
+    
+    private Player player;
+            
+    private boolean estaClavado;
     
     private int x;
     private int y;
     
-    public Pieza(char s){
-        signo = s;
+    //new Pieza('-');
+    
+    public Pieza(char signo){
+        this.signo = signo;
     }
-        
-    public Pieza(int x, int y, char signo){
+    
+    
+    public Pieza(int x, int y, char signo, Player player){
+        estaClavado = false;
         this.x = x;
         this.y = y;
         this.signo = signo;
+        this.player = player;
     }
-    public Pieza(char s, String color){
-        signo = s;
-        this.color = color;
-    }
+
     public void setSigno(char c){
         signo = c;
     }
@@ -52,5 +57,14 @@ public class Pieza {
     public void setY(int y) {
         this.y = y;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
     
+ 
 }
