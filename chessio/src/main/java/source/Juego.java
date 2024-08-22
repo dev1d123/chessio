@@ -21,8 +21,9 @@ public class Juego {
     //Clase jugador
     
     public Juego(){
-        j1 = new Player("Julio", false);
-        j2 = new Player("Julian", true);
+        j1 = new Player("Julio", false, false); //negras....abajo
+        
+        j2 = new Player("Julian", true, true); //blancas....arriba
         tabla = new Tablero();     
         
         tabla.agregarPieza(new Torre(0, 0, j2));
@@ -194,6 +195,33 @@ public class Juego {
             }
         }
         return false;
+    }
+    
+    
+    
+    // Método estatico para obtener los movimientos de una pieza que se mueve vertical o diagonalmente.
+    public static void agregarMovimientos(Tablero tabla, ArrayList<Pair> res, int startX, int startY, int dx, int dy, Player player) {
+        int x = startX;
+        int y = startY;
+        
+        while (true) {
+            x += dx;
+            y += dy;
+            
+            if (x < 0 || x >= 8 || y < 0 || y >= 8) {
+                break;
+            }
+
+            Casilla casilla = tabla.tabla[x][y];
+            if (!casilla.tienePieza()) {
+                res.add(new Pair(x, y));
+            } else {
+                if (casilla.getPieza().getPlayer() != player) {
+                    res.add(new Pair(x, y)); 
+                }
+                break;
+            }
+        }
     }
 }
 /*

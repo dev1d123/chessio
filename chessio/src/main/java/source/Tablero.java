@@ -12,7 +12,7 @@ public class Tablero {
     public Tablero(){
         for(int i = 0 ; i < tabla.length; i++){
             for(int j = 0; j <  tabla[i].length; j++){
-                tabla[i][j] = new Casilla(i, j, new Pieza('-')); 
+                tabla[i][j] = new Casilla(i, j); 
             }
         }
     }
@@ -32,8 +32,9 @@ public class Tablero {
             System.out.println();
         }
     }
-
 }
+
+
 
 
 

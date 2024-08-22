@@ -21,62 +21,10 @@ public class Torre extends Pieza implements PiezaInterfaz{
     @Override
     public ArrayList<Pair> getMovimientos(Tablero tabla) {
         ArrayList<Pair> res = new ArrayList<>();
-        //Son 4 casos, sea la posicion, x, y -> xa, xb, cy, dy....
-        boolean c1=true, c2=true, c3=true, c4=true;
-        //Comenzar en la posicion centrar, luego expandirse
-        for(int i = this.getX()+1; i < 8; i++){
-            //si hay un amigo ahi...falta, verificar que ninguno sea nulo
-            if(this.getPlayer() == tabla.tabla[i][this.getY()].getPieza().getPlayer()){
-                c1 = false;
-            }
-            if(c1){
-                Pair par = new Pair(i, this.getY());
-                res.add(par);
-            }
-            //si hay un enemigo ahi
-            if(this.getPlayer() != tabla.tabla[i][this.getY()].getPieza().getPlayer()){
-                c1 = false;
-            }
-        }
-        for(int i = this.getX()-1; i >= 0; i--){
-            if(this.getPlayer() == tabla.tabla[i][this.getY()].getPieza().getPlayer()){
-                c1 = false;
-            }
-            if(c1){
-                Pair par = new Pair(i, this.getY());
-                res.add(par);
-            }
-            //si hay un enemigo ahi
-            if(this.getPlayer() != tabla.tabla[i][this.getY()].getPieza().getPlayer()){
-                c1 = false;
-            }
-        }
-        for(int i = this.getY()+1; i < 8; i++){
-            if(this.getPlayer() == tabla.tabla[this.getX()][i].getPieza().getPlayer()){
-                c1 = false;
-            }
-            if(c1){
-                Pair par = new Pair(this.getX(), i);
-                res.add(par);
-            }
-            //si hay un enemigo ahi
-            if(this.getPlayer() != tabla.tabla[this.getX()][i].getPieza().getPlayer()){
-                c1 = false;
-            }
-        }
-        for(int i = this.getY()-1; i >= 0; i--){
-            if(this.getPlayer() == tabla.tabla[i][this.getY()].getPieza().getPlayer()){
-                c1 = false;
-            }
-            if(c1){
-                Pair par = new Pair(i, this.getY());
-                res.add(par);
-            }
-            //si hay un enemigo ahi
-            if(this.getPlayer() != tabla.tabla[i][this.getY()].getPieza().getPlayer()){
-                c1 = false;
-            }
-        }
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 1, 0, this.getPlayer());  // Derecha
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), -1, 0, this.getPlayer()); // Izquierda
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 0, 1, this.getPlayer());  // Arriba
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 0, -1, this.getPlayer()); // Abajo
 
         return res;
     }

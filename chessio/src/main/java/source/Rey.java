@@ -1,44 +1,40 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package source;
 
 import java.util.ArrayList;
 
-/**
- *
- * @author Windows
- */
-public class Rey extends Pieza implements PiezaInterfaz{
-        //Inicia el juego y cuando se corona
-    //x, y, signo
+public class Rey extends Pieza implements PiezaInterfaz {
+    
     public Rey(int x, int y, Player player) {
         super(x, y, 'R', player);
     }
 
     @Override
-    public ArrayList<Pair> getMovimientos() {
+    public ArrayList<Pair> getMovimientos(Tablero tabla) {
         ArrayList<Pair> res = new ArrayList<>();
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                
-                if(Math.abs(getX()-i) == 1 && getY() == j){
-                    Pair par = new Pair(i, j);
-                    res.add(par);
-                }
-                if(Math.abs(getY()-j) == 1 && getX() == i){
-                    Pair par = new Pair(i, j);
-                    res.add(par);
-                }
-                if(Math.abs(getX()-i) == 1 && Math.abs(getY()-j) == 1){
-                    Pair par = new Pair(i, j);
-                    res.add(par);
+        
+        int[][] movimientos = {
+            {1, 0}, {-1, 0}, {0, 1}, {0, -1},
+            {1, 1}, {-1, -1}, {1, -1}, {-1, 1}
+        };
+
+        for (int[] mov : movimientos) {
+            int newX = this.getX() + mov[0];
+            int newY = this.getY() + mov[1];
+            if (posValida(newX, newY)) {
+                Casilla casilla = tabla.tabla[newX][newY];
+                if (!casilla.tienePieza() || casilla.getPieza().getPlayer() != this.getPlayer()) {
+                    res.add(new Pair(newX, newY));
                 }
             }
         }
+
         return res;
     }
+
+    private boolean posValida(int fila, int columna) {
+        return (fila >= 0 && columna >= 0 && fila <= 7 && columna <= 7);
+    }
+
     public String getM(){
         ArrayList<Pair> res = getMovimientos();
         String ans = "";
@@ -47,6 +43,4 @@ public class Rey extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-
-    
 }

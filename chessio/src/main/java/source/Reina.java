@@ -18,22 +18,16 @@ public class Reina extends Pieza implements PiezaInterfaz{
     }
 
     @Override
-    public ArrayList<Pair> getMovimientos() {
+    public ArrayList<Pair> getMovimientos(Tablero tabla) {
         ArrayList<Pair> res = new ArrayList<>();
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                
-                if(getX() == i && getY() ==j) continue;
-                if(Math.abs(getX()-i) == Math.abs(getY()-j)){
-                    Pair par = new Pair(i, j);
-                    res.add(par);
-                }
-                if(this.getX() == i || this.getY() == j){
-                    Pair par = new Pair(i, j);
-                    res.add(par);
-                }
-            }
-        }
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 1, 0, this.getPlayer());  // Derecha
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), -1, 0, this.getPlayer()); // Izquierda
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 0, 1, this.getPlayer());  // Arriba
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 0, -1, this.getPlayer()); // Abajo
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 1, 1, this.getPlayer());  // ⬈
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 1, -1, this.getPlayer()); // ⬉
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), -1, 1, this.getPlayer());  // ⬊
+        Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), -1, -1, this.getPlayer()); // ⬋
         return res;
     }
     public String getM(){

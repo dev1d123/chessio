@@ -18,49 +18,31 @@ public class Caballo extends Pieza implements PiezaInterfaz{
     }
 
     @Override
-    public ArrayList<Pair> getMovimientos() {
+    public ArrayList<Pair> getMovimientos(Tablero tabla) {
         ArrayList<Pair> res = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                int distancia = distanciaLineal(i, j);
-                if (i == this.getX()) {
-                    if (distancia == 2) {
-                        if(posValida( i - 1, j)) { //Pos 1
-                            Pair p = new Pair(i - 1, j);
-                            res.add(p);
-                        } 
-                        if (posValida(i + 1, j)) {//Pos 2
-                            Pair p = new Pair(i + 1, j);
-                            res.add(p);
-                        }
-                    }
-                }
-                if (j == this.getY()) {
-                    if (distancia == 2) {
-                        if (posValida(i, j - 1)) { //Pos 1
-                            Pair p = new Pair(i, j - 1);
-                            res.add(p);
-                        }
-                        if (posValida(i, j + 1)) { //Pos 2
-                            Pair p = new Pair(i, j + 1);
-                            res.add(p);
-                        }
-                    }
-                
+        //A partir de la posicion, los posibles movimientos son los siguientes.
+        int[][] movimientos = {
+            {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+            {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
+        };
+        //Por cada moviemiento, verificar si esa posicion es valida
+        for (int[] mov : movimientos) {
+            int newX = this.getX() + mov[0];
+            int newY = this.getY() + mov[1];
+            if (posValida(newX, newY)) {
+                //si es valida verificar que sea mi enemigo  o una casilla vacia
+                Casilla casilla = tabla.tabla[newX][newY];
+                if (!casilla.tienePieza() || casilla.getPieza().getPlayer() != this.getPlayer()) {
+                    res.add(new Pair(newX, newY));
                 }
             }
         }
         return res;
 
     }
-    
-    private int distanciaLineal(int fila, int columna) {
-        int rpta = 0;
-        rpta += Math.abs(this.getX() - fila);
-        rpta += Math.abs(this.getY() - columna);
-        return rpta;
-    }
-    
+   
+            
+
     private boolean posValida(int fila, int columna) {
         return (fila >= 0 && columna >= 0 && fila <= 7 && columna <= 7);
     }
