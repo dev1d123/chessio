@@ -13,10 +13,13 @@ public class Player{
     private boolean color;
     //color == true -> blancas
     //color == false -> negras
-
-    public Player(String nombre, boolean color) {
+    private boolean posicion;
+    //posicion = true -> arriba
+    //posicion = false -> abajo
+    public Player(String nombre, boolean color, boolean posicion) {
         this.nombre = nombre;
         this.color = color;
+        this.posicion = posicion;
     }
 
     public String getNombre() {

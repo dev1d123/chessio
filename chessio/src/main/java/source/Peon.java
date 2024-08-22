@@ -20,8 +20,10 @@ public class Peon extends Pieza implements PiezaInterfaz{
     
     @Override
     public ArrayList<Pair> getMovimientos() {
+        //El peon tiene un tratamiento adicional!!!
         return null;
     }
+
 
     
 }

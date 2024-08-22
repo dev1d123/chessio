@@ -4,11 +4,13 @@
  */
 package source;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Windows
  */
-public class Pieza {
+public class Pieza{
     //private Jugador j
     //private boolean valido
     private char signo;
@@ -66,5 +68,9 @@ public class Pieza {
         this.player = player;
     }
     
- 
+    public ArrayList<Pair> getMovimientos() {
+        return null;
+    }
+
+    
 }

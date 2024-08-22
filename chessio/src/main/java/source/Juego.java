@@ -4,6 +4,7 @@
  */
 package source;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -84,14 +85,17 @@ public class Juego {
                 System.out.println("La pieza seleccionada es " + selec);
                 System.out.println("Los movimiento son");
                 //
-                String mov = selec.getPieza().getM();
+                ArrayList<Pair> mov = selec.getPieza().getMovimientos();
+                for(Pair parsito: mov){
+                    System.out.println(parsito.X + ", " + parsito.Y);
+                }
                 //mover la pieza
                 boolean mover = false;
                 do{
                     System.out.println("Seleccione una posicion");
                     int xSelect = sc.nextInt();
                     int ySelect = sc.nextInt();
-                    mover = mover(selec, xSelect, ySelect);
+                    mover = mover(selec, xSelect, ySelect, mov);
                  
                 }while(!mover);
                 System.out.println("Se movio");
@@ -106,13 +110,18 @@ public class Juego {
                     selec = seleccionarPieza(black, xSelect, ySelect); 
                 }while(selec == null);
                 System.out.println("La pieza seleccionada es " + selec);
-                
+                System.out.println("Los movimiento son");
+                //
+                ArrayList<Pair> mov = selec.getPieza().getMovimientos();
+                for(Pair parsito: mov){
+                    System.out.println(parsito.X + ", " + parsito.Y);
+                }                
                 boolean mover = false;
                 do{
                     System.out.println("Seleccione una posicion");
                     int xSelect = sc.nextInt();
                     int ySelect = sc.nextInt();
-                    mover = mover(selec, xSelect, ySelect);
+                    mover = mover(selec, xSelect, ySelect, mov);
                  
                 }while(!mover);
                 System.out.println("Se movio");
@@ -142,7 +151,7 @@ public class Juego {
     }
     
     
-    public boolean mover(Casilla pieza, int x, int y){ 
+    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles){ 
         if(x>=8 || x < 0 || y>=8 || y < 0 ){
             System.out.println("Limites excedidos");
             return false;
@@ -152,6 +161,10 @@ public class Juego {
             return false;
         }
         //recorrer todos los pares y con x y y, verificar que sea valido
+        if(!validarMovimientoPieza(x, y, movimientosDisponibles)){
+            System.out.println("Esa pieza no puede moverse ahi!!!");
+            return false;
+        }
         if(tabla.tabla[x][y].getPieza().getSigno() != '-'){
             System.out.println("Hay una pieza!!");
             return false;
@@ -174,7 +187,14 @@ public class Juego {
        
         //fuerza
     }
-    
+    public boolean validarMovimientoPieza(int x, int y, ArrayList<Pair> movimientosDisponibles){
+        for(Pair parsito: movimientosDisponibles){
+            if(parsito.X == x && parsito.Y == y){
+                return true;
+            }
+        }
+        return false;
+    }
 }
 /*
 DRY -> Do not repeat yourself
