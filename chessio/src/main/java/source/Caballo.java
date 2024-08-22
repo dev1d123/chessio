@@ -47,8 +47,8 @@ public class Caballo extends Pieza implements PiezaInterfaz{
         return (fila >= 0 && columna >= 0 && fila <= 7 && columna <= 7);
     }
     
-    public String getM(){
-        ArrayList<Pair> res = getMovimientos();
+    public String getM(Tablero tabla){
+        ArrayList<Pair> res = getMovimientos(tabla);
         String ans = "";
         for(Pair p: res){
             ans+= "("+p.X+", "+p.Y+")\n";

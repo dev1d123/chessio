@@ -9,17 +9,16 @@ public class Casilla {
     private Pieza pieza;
     //Crear una pieza...que represente a una casilla vacia
     private int x,y;
-    private boolean tienePieza;
+    private boolean tienePieza = false;
     public Casilla(int x, int y, Pieza pieza){
         this.x = x; 
         this.y = y;
         this.pieza = pieza;
-        this.tienePieza = false;
+        this.tienePieza = true;
     }
     public Casilla(int x, int y){
         this.x = x; 
         this.y = y;
-        this.tienePieza = false;
     }
 
     public boolean tienePieza() {
@@ -33,7 +32,7 @@ public class Casilla {
 
     public void setPieza(Pieza pieza) {
         this.pieza = pieza;
-        this.tienePieza = true;
+        if (pieza.getSigno() != '-') this.tienePieza = true;
     }
 
     public int getX() {

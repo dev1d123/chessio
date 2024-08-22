@@ -27,8 +27,8 @@ public class Alfil extends Pieza implements PiezaInterfaz{
 
         return res;
     }
-    public String getM(){
-        ArrayList<Pair> res = getMovimientos();
+    public String getM(Tablero tabla){
+        ArrayList<Pair> res = this.getMovimientos(tabla);
         String ans = "";
         for(Pair p: res){
             ans+= "("+p.X+", "+p.Y+")\n";

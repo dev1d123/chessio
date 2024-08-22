@@ -68,7 +68,7 @@ public class Pieza{
         this.player = player;
     }
     
-    public ArrayList<Pair> getMovimientos() {
+    public ArrayList<Pair> getMovimientos(Tablero tabla) {
         return null;
     }
 

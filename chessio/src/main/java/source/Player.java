@@ -34,6 +34,14 @@ public class Player{
         return color;
     }
 
+    public boolean getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(boolean posicion) {
+        this.posicion = posicion;
+    }
+
     public void setColor(boolean color) {
         this.color = color;
     }

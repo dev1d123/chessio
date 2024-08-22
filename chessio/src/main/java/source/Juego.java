@@ -20,13 +20,13 @@ public class Juego {
     private Player j2;
     //Clase jugador
     
-    public Juego(){
-        j1 = new Player("Julio", false, false); //negras....abajo
-        
-        j2 = new Player("Julian", true, true); //blancas....arriba
+    public Juego(){ //La posición puede ser una constante (final)
+        j1 = new Player("Julio", false, false); //negras....abajo, jugador 1 siempre abajo -> posicion = false
+        j2 = new Player("Julian", true, true); //blancas....arriba, jugador 2 siempre arriba -> posicion = true
         tabla = new Tablero();     
-        
-        tabla.agregarPieza(new Torre(0, 0, j2));
+
+        // Piezas del jugador j2 (superior)
+        tabla.agregarPieza(new Torre(0, 0, j2)); 
         tabla.agregarPieza(new Caballo(0, 1, j2));
         tabla.agregarPieza(new Alfil(0, 2, j2));
         tabla.agregarPieza(new Reina(0, 3, j2));
@@ -86,7 +86,7 @@ public class Juego {
                 System.out.println("La pieza seleccionada es " + selec);
                 System.out.println("Los movimiento son");
                 //
-                ArrayList<Pair> mov = selec.getPieza().getMovimientos();
+                ArrayList<Pair> mov = selec.getPieza().getMovimientos(tabla);
                 for(Pair parsito: mov){
                     System.out.println(parsito.X + ", " + parsito.Y);
                 }
@@ -96,13 +96,13 @@ public class Juego {
                     System.out.println("Seleccione una posicion");
                     int xSelect = sc.nextInt();
                     int ySelect = sc.nextInt();
-                    mover = mover(selec, xSelect, ySelect, mov);
+                    mover = this.mover(selec, xSelect, ySelect, mov);
                  
                 }while(!mover);
                 System.out.println("Se movio");
 
             }else{
-                System.out.println("Turno del jugador negras");
+                System.out.println("Turno del jugador negrans");
                 Casilla selec = null;
                 do{
                     System.out.println("Seleccione una pieza");
@@ -113,7 +113,7 @@ public class Juego {
                 System.out.println("La pieza seleccionada es " + selec);
                 System.out.println("Los movimiento son");
                 //
-                ArrayList<Pair> mov = selec.getPieza().getMovimientos();
+                ArrayList<Pair> mov = selec.getPieza().getMovimientos(tabla);
                 for(Pair parsito: mov){
                     System.out.println(parsito.X + ", " + parsito.Y);
                 }                
@@ -161,7 +161,7 @@ public class Juego {
             System.out.println("No puedes seleccionar la misma casilla");
             return false;
         }
-        //recorrer todos los pares y con x y y, verificar que sea valido
+        //recorrer todos los pares y con "x" e "y", verificar que sea valido
         if(!validarMovimientoPieza(x, y, movimientosDisponibles)){
             System.out.println("Esa pieza no puede moverse ahi!!!");
             return false;
@@ -183,7 +183,7 @@ public class Juego {
         
         //verificar si esta clavado...fuerza bruta...
         
-        //si hay jaque (todas las piezas estasn clavadas exceto las que puedo mover)
+        //si hay jaque (todas las piezas estasn clavadas excepto las que puedo mover)
         
        
         //fuerza
@@ -226,5 +226,5 @@ public class Juego {
 }
 /*
 DRY -> Do not repeat yourself
-KISS -> Keep it short and simple
+KISS -> Keep it short and simple 
 */

@@ -30,8 +30,8 @@ public class Reina extends Pieza implements PiezaInterfaz{
         Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), -1, -1, this.getPlayer()); // ⬋
         return res;
     }
-    public String getM(){
-        ArrayList<Pair> res = getMovimientos();
+    public String getM(Tablero tabla){
+        ArrayList<Pair> res = getMovimientos(tabla);
         String ans = "";
         for(Pair p: res){
             ans+= "("+p.X+", "+p.Y+")\n";
