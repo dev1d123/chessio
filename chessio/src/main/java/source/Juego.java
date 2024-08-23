@@ -19,7 +19,10 @@ public class Juego {
     private Player j1;
     private Player j2;
     //Clase jugador
-    
+
+    //paths -> texturas....
+
+
     public Juego(){ //La posición puede ser una constante (final)
         j1 = new Player("Julio", false, false); //negras....abajo, jugador 1 siempre abajo -> posicion = false
         j2 = new Player("Julian", true, true); //blancas....arriba, jugador 2 siempre arriba -> posicion = true
@@ -166,27 +169,35 @@ public class Juego {
             System.out.println("Esa pieza no puede moverse ahi!!!");
             return false;
         }
-        if(tabla.tabla[x][y].getPieza().getSigno() != '-'){
-            System.out.println("Hay una pieza!!");
-            return false;
+
+
+        Pieza mover = pieza.getPieza();
+        
+
+
+        Player jugador = mover.getPlayer();
+        Casilla objetivo = tabla.tabla[x][y];
+
+        if(tabla.tabla[x][y].tienePieza()){
+            if(tabla.tabla[x][y].getPieza().getPlayer() == jugador){
+                System.out.println("nunca vas a ver este mensaje");
+                return false;
+            }else{
+                //comer
+                objetivo.setPieza(new Pieza('-'));
+                objetivo.quitarPieza();                
+            }
         }
         //clavada, jaque
        
-        Casilla objetivo = tabla.tabla[x][y];
-        Pieza mover = pieza.getPieza();
+
         pieza.setPieza(new Pieza('-'));
+        pieza.quitarPieza();
         objetivo.setPieza(mover);
+        
         return true;
         
-        //80
-        
-        
-        //verificar si esta clavado...fuerza bruta...
-        
-        //si hay jaque (todas las piezas estasn clavadas excepto las que puedo mover)
-        
-       
-        //fuerza
+
     }
     public boolean validarMovimientoPieza(int x, int y, ArrayList<Pair> movimientosDisponibles){
         for(Pair parsito: movimientosDisponibles){
@@ -228,3 +239,7 @@ public class Juego {
 DRY -> Do not repeat yourself
 KISS -> Keep it short and simple 
 */
+
+//JFrame -> constructor -> tamaño, titulo, setVisible(), createContens....
+
+//Programacion con hilos -> animaciones (fotogramas)

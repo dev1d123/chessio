@@ -41,6 +41,10 @@ public class Peon extends Pieza implements PiezaInterfaz{
                 int newX = this.getX() + movimientos[i][0];
                 int newY = this.getY() + movimientos[i][1];
                 
+                if(!posValida(newX, newY)){
+                    continue;
+                }
+
                 Casilla cas = t.tabla[newX][newY];  
                 //System.out.println(newX + "" + newY);
                 //System.out.println("Se pregunta tiene pieza?: " + cas.tienePieza());
@@ -73,5 +77,8 @@ public class Peon extends Pieza implements PiezaInterfaz{
         return this.primerizo;
     }
 
+    private boolean posValida(int fila, int columna) {
+        return (fila >= 0 && columna >= 0 && fila <= 7 && columna <= 7);
+    }
     
 }

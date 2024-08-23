@@ -29,9 +29,14 @@ public class Casilla {
     public Pieza getPieza() {
         return pieza;
     }
-
+    public void quitarPieza(){
+        this.tienePieza = false;
+    }
     public void setPieza(Pieza pieza) {
         this.pieza = pieza;
+        pieza.setX(this.x);
+        pieza.setY(this.y);
+
         if (pieza.getSigno() != '-') this.tienePieza = true;
     }
 
@@ -55,3 +60,14 @@ public class Casilla {
     }
 
 }
+
+//sabado (interfaz grafica del ajedrez...)
+//lunes (debugear el juego .... errores minimos)....Julio juege con un bot ()
+
+//miercoles (ajedrez 100%, comenzar con la comunicacion entre ventanas)
+
+//jueves (perfil, edicion)
+
+//sabado (Terminar con lo demas)
+
+//lunes...100% (1 septiembre)

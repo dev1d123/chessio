@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Windows
  */
 public class Alfil extends Pieza implements PiezaInterfaz{
-        //Inicia el juego y cuando se corona
+    //Inicia el juego y cuando se corona
     //x, y, signo
     public Alfil(int x, int y, Player player) {
         super(x, y, 'A', player);
