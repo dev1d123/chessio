@@ -7,6 +7,10 @@ package source;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
+import interfazGrafica.TableroGUI;
+
 /**
  *
  * @author Windows
@@ -64,8 +68,10 @@ public class Juego {
         
         turno = 0;
     }
-    
-    public void iniciarJuego(){
+    public Tablero getTablero(){
+        return tabla;
+    }
+    public void iniciarJuego(TableroGUI tab){
         Scanner sc = new Scanner(System.in);
         System.out.println("Iniciando juego");
         tabla.imprimirTabla();
@@ -80,10 +86,13 @@ public class Juego {
                 //if(casilla != null)
                 Casilla selec = null;
                 do{
-                    System.out.println("Seleccione una pieza");
+                    JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
+                    Pair par = tab.seleccionarElemento();
+                    /*
                     int xSelect = sc.nextInt();
                     int ySelect = sc.nextInt();
-                    selec = seleccionarPieza(white, xSelect, ySelect); 
+                    */
+                    selec = seleccionarPieza(white, par.X , par.Y); 
                     
                 }while(selec == null);
                 System.out.println("La pieza seleccionada es " + selec);
@@ -96,22 +105,22 @@ public class Juego {
                 //mover la pieza
                 boolean mover = false;
                 do{
-                    System.out.println("Seleccione una posicion");
-                    int xSelect = sc.nextInt();
-                    int ySelect = sc.nextInt();
-                    mover = this.mover(selec, xSelect, ySelect, mov);
+                    JOptionPane.showMessageDialog(null, "Seleccione una posicion!");
+                    Pair par = tab.seleccionarElemento();
+                    mover = this.mover(selec, par.X, par.Y, mov);
                  
                 }while(!mover);
-                System.out.println("Se movio");
-
             }else{
                 System.out.println("Turno del jugador negrans");
                 Casilla selec = null;
                 do{
-                    System.out.println("Seleccione una pieza");
+                    JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
+                    Pair par = tab.seleccionarElemento();
+                    /*
                     int xSelect = sc.nextInt();
                     int ySelect = sc.nextInt();
-                    selec = seleccionarPieza(black, xSelect, ySelect); 
+                    */
+                    selec = seleccionarPieza(black, par.X , par.Y); 
                 }while(selec == null);
                 System.out.println("La pieza seleccionada es " + selec);
                 System.out.println("Los movimiento son");
@@ -122,14 +131,15 @@ public class Juego {
                 }                
                 boolean mover = false;
                 do{
-                    System.out.println("Seleccione una posicion");
-                    int xSelect = sc.nextInt();
-                    int ySelect = sc.nextInt();
-                    mover = mover(selec, xSelect, ySelect, mov);
+                    JOptionPane.showMessageDialog(null, "Seleccione una posicion!");
+                    Pair par = tab.seleccionarElemento();
+                    mover = this.mover(selec, par.X, par.Y, mov);
                  
                 }while(!mover);
                 System.out.println("Se movio");
             }
+            tab.reload();
+
             tabla.imprimirTabla();
             turno++;
         }while(end);

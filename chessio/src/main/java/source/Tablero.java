@@ -7,7 +7,7 @@ package source;
  */
 
 public class Tablero {
-    Casilla tabla[][] = new Casilla[8][8];
+    public Casilla tabla[][] = new Casilla[8][8];
     
     public Tablero(){
         for(int i = 0 ; i < tabla.length; i++){
