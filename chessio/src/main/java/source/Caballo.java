@@ -15,6 +15,8 @@ public class Caballo extends Pieza implements PiezaInterfaz{
     //x, y, signo
     public Caballo(int x, int y, Player player) {
         super(x, y, 'C', player);
+        imgPath1 = "white-knight.png";
+        imgPath2 = "black-knight.png";
     }
 
     @Override

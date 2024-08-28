@@ -13,6 +13,6 @@ public class Game {
         TableroGUI tablero = new TableroGUI(j);
         JOptionPane.showMessageDialog(null, "El tablero ha sido creado");
         j.iniciarJuego(tablero);
-
+        
     }  
 }

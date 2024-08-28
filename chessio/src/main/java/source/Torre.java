@@ -16,6 +16,8 @@ public class Torre extends Pieza implements PiezaInterfaz{
     //x, y, signo
     public Torre(int x, int y, Player player) {
         super(x, y, 'T', player);
+        imgPath1 = "white-rook.png";
+        imgPath2 = "black-rook.png";
     }
 
     @Override

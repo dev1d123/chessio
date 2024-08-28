@@ -17,6 +17,8 @@ public class Peon extends Pieza implements PiezaInterfaz{
     
     public Peon(int x, int y, Player player) {
         super(x, y, 'P', player);
+        imgPath1 = "white-pawn.png";
+        imgPath2 = "black-pawn.png";
     }
     
     @Override

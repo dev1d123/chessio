@@ -13,8 +13,11 @@ import java.util.ArrayList;
 public class Alfil extends Pieza implements PiezaInterfaz{
     //Inicia el juego y cuando se corona
     //x, y, signo
+    
     public Alfil(int x, int y, Player player) {
         super(x, y, 'A', player);
+        imgPath1 = "white-bishop.png";
+        imgPath2 = "black-bishop.png";
     }
 
     @Override

@@ -99,6 +99,8 @@ public class Juego {
                 System.out.println("Los movimiento son");
                 //
                 ArrayList<Pair> mov = selec.getPieza().getMovimientos(tabla);
+                tab.paintMovements(mov);
+                //tab.pinta(mov);
                 for(Pair parsito: mov){
                     System.out.println(parsito.X + ", " + parsito.Y);
                 }
@@ -129,6 +131,8 @@ public class Juego {
                 for(Pair parsito: mov){
                     System.out.println(parsito.X + ", " + parsito.Y);
                 }                
+                tab.paintMovements(mov);
+
                 boolean mover = false;
                 do{
                     JOptionPane.showMessageDialog(null, "Seleccione una posicion!");
@@ -146,6 +150,7 @@ public class Juego {
     }
     
     public Casilla seleccionarPieza(Player p, int x, int y){ //jugador
+
         if(x>=8 || x < 0 || y>=8 || y < 0 ){
             System.out.println("Limites excedidos");
             return null;
@@ -157,6 +162,11 @@ public class Juego {
             System.out.println("Esa no es tu pieza!");
             return null;
         }
+        /*
+         * Si la res.tienePieza()
+         * if(res.tienePieza(), )
+         * 
+         */
         if(res.getPieza().getSigno() != '-'){
             return res;
         }
@@ -170,10 +180,20 @@ public class Juego {
             System.out.println("Limites excedidos");
             return false;
         }
+
         if(pieza.getX() == x && pieza.getY() == y){
             System.out.println("No puedes seleccionar la misma casilla");
             return false;
         }
+
+        /*
+         * if(pieza te corresponde){
+         *      
+         * }
+         */
+
+
+
         //recorrer todos los pares y con "x" e "y", verificar que sea valido
         if(!validarMovimientoPieza(x, y, movimientosDisponibles)){
             System.out.println("Esa pieza no puede moverse ahi!!!");

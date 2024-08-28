@@ -6,10 +6,13 @@ public class Rey extends Pieza implements PiezaInterfaz {
     
     public Rey(int x, int y, Player player) {
         super(x, y, 'R', player);
+        imgPath1 = "white-king.png";
+        imgPath2 = "black-king.png";
     }
 
     @Override
     public ArrayList<Pair> getMovimientos(Tablero tabla) {
+        //si la torre 
         ArrayList<Pair> res = new ArrayList<>();
         
         int[][] movimientos = {
@@ -44,3 +47,11 @@ public class Rey extends Pieza implements PiezaInterfaz {
         return ans;
     }
 }
+
+/*
+ * Enroque, Coronacion (Julio.....Interfaz)
+ * Imagenes (Eduardo)
+ * 
+ *  peon al paso, piezas clavadas, jaque, jaquemate, tabla 
+ * 
+ */

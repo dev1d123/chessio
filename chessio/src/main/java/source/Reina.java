@@ -15,6 +15,8 @@ public class Reina extends Pieza implements PiezaInterfaz{
     //x, y, signo
     public Reina(int x, int y, Player player) {
         super(x, y, 'Q', player);
+        imgPath1 = "white-queen.png";
+        imgPath2 = "black-queen.png";
     }
 
     @Override

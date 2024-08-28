@@ -19,6 +19,10 @@ public class Pieza{
             
     private boolean estaClavado;
     
+    protected String imgPath1;
+    protected String imgPath2;
+
+
     private int x;
     private int y;
     
@@ -28,13 +32,23 @@ public class Pieza{
         this.signo = signo;
     }
     
-    
+    public void setPath(String v1, String v2){
+        imgPath1 = v1;
+        imgPath2 = v2;
+    }    
+    public String getPath1(){
+        return imgPath1;
+    }
+    public String getPath2(){
+        return imgPath2;
+    }
     public Pieza(int x, int y, char signo, Player player){
         estaClavado = false;
         this.x = x;
         this.y = y;
         this.signo = signo;
         this.player = player;
+
     }
 
     public void setSigno(char c){
