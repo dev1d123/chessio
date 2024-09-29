@@ -13,7 +13,7 @@ public class Main {
         
         //recibir instrucciones....jugador1, jugador2 -> opciones(skins, efectos de sonido y musica)
         Juego j = new Juego();
-        //j.iniciarJuego(T);
+        //j.iniciarJuego();
 
     }
 }

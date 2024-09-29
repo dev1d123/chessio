@@ -1,7 +1,6 @@
 package interfazGrafica;
 
 import source.*;
-import source.Pair;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -22,7 +21,8 @@ public class TableroGUI extends JFrame {
         this.juego = juego;
         buttons = new JButton[8][8];
         setTitle("Tablero Chessio");
-        setSize(800, 800);
+        setSize(640, 640);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(8, 8));
@@ -42,10 +42,7 @@ public class TableroGUI extends JFrame {
         revalidate(); 
         repaint();   
     }
-    //Signo sg...
-    //Composicion ->Pieza pz = new Pieza(new Signo());
-    //Agregacion -> Pieza pz1 = new Pieza(sg);
-                    //Pieza pz2 = new Pieza(sg);
+
     public void createContents(Tablero tabla){
         getContentPane().removeAll(); 
 
@@ -65,15 +62,22 @@ public class TableroGUI extends JFrame {
             if((tabla.tabla[i/8][i%8].tienePieza())){
                 if(tabla.tabla[i/8][i%8].getPieza().getPlayer().isWhite()){
                     try{
+
                         Image img = ImageIO.read(getClass().getClassLoader().getResourceAsStream(tabla.tabla[i/8][i%8].getPieza().getPath1()));
-                        btn.setIcon(new ImageIcon(img));
+                        Image newImg = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+
+                        ImageIcon icono = new ImageIcon(newImg);
+                        btn.setIcon(icono);
                     }catch(Exception e){
                         e.printStackTrace();
                     }
                 }else{
                     try{
                         Image img = ImageIO.read(getClass().getClassLoader().getResourceAsStream(tabla.tabla[i/8][i%8].getPieza().getPath2()));
-                        btn.setIcon(new ImageIcon(img));
+                        Image newImg = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+
+                        ImageIcon icono = new ImageIcon(newImg);
+                        btn.setIcon(icono);
                     }catch(Exception e){
                         e.printStackTrace();
                     }
