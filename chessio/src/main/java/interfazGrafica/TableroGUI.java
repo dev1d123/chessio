@@ -118,5 +118,4 @@ public class TableroGUI extends JFrame {
         createContents(juego.getTablero());
     }
 
-    //JULIO -> Ventanitas....(comunicacion entre ventanitas y lo demas....)
 }
