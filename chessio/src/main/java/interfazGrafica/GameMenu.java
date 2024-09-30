@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -13,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+
 
 public class GameMenu extends JFrame{
     public GameMenu(){
@@ -34,8 +37,7 @@ public class GameMenu extends JFrame{
         
         image.add(picLabel);
 
-        JPanel space = new JPanel();
-        space.setBackground(Color.red);
+        JPanel space = new BackgroundPanel();
 
         c.gridx = 0;
         c.gridy = 0;
@@ -54,7 +56,6 @@ public class GameMenu extends JFrame{
         c.fill = GridBagConstraints.BOTH;  
 
         
-        space.add(new JButton("boton"));
         add(space, c);
 
 
