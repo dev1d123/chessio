@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,7 +19,8 @@ public class BackgroundPanel extends JPanel{
     public BackgroundPanel(){
         backgroundImage = Toolkit.getDefaultToolkit().createImage(getClass().getClassLoader().getResource("menu/background.jpg"));
         //agregar todos los botones y titulos 
-        
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); 
+
         ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("menu/logo.png"));
         Image originalImage = icon.getImage();
         Image resizedImage = originalImage.getScaledInstance(500, 200, Image.SCALE_SMOOTH); 
@@ -29,16 +31,34 @@ public class BackgroundPanel extends JPanel{
         Border lineBorder = BorderFactory.createLineBorder(Color.YELLOW, 3);
         title.setBorder(BorderFactory.createCompoundBorder(lineBorder, null));
 
+
+        title.setAlignmentX(CENTER_ALIGNMENT);
         add(title);
+        JPanel buttonContainer = new JPanel();
+        buttonContainer.setLayout(new BoxLayout(buttonContainer, BoxLayout.Y_AXIS));
+        buttonContainer.setOpaque(false); 
 
+        buttonContainer.add(createButton("menu/play.png"));
+        buttonContainer.add(createButton("menu/aboutus.png"));
+        buttonContainer.add(createButton("menu/challenge.png"));
+        buttonContainer.add(createButton("menu/settings.png"));
 
-        ImageIcon icon2 = new ImageIcon(getClass().getClassLoader().getResource("menu/play.png"));
-        JButton btn = new JButton(icon2);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setContentAreaFilled(false);
-        add(btn);                                                                                                  
+        add(buttonContainer);
+    }
+    private JButton createButton(String imagePath) {
+        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imagePath));
+        Image originalImage = icon.getImage();
+        Image resizedImage = originalImage.getScaledInstance(300, 120, Image.SCALE_SMOOTH); // Tamaño fijo para los botones
+        ImageIcon resizedIcon = new ImageIcon(resizedImage);
 
+        JButton button = new JButton(resizedIcon);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setSize(100, 100); // Establece el tamaño fijo
+        button.setAlignmentX(CENTER_ALIGNMENT); // Centra el botón horizontalmente
+
+        return button;
     }
 
     protected void paintComponent(Graphics g){
