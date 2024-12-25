@@ -6,19 +6,21 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-
+import javax.swing.SwingUtilities;
 
 public class GameMenu extends JFrame{
     public GameMenu(){
@@ -46,7 +48,7 @@ public class GameMenu extends JFrame{
         JPanel profilePanel = new JPanel(new GridBagLayout());
         GridBagConstraints pc = new GridBagConstraints();
 
-        JLabel profileLabel = new JLabel("Perfil:");
+        JLabel profileLabel = new JLabel("Profile:");
         pc.gridx = 0;
         pc.gridy = 0;
         pc.insets = new Insets(5, 5, 5, 5);
@@ -57,18 +59,51 @@ public class GameMenu extends JFrame{
         pc.gridx = 1;
         pc.gridy = 0;
         profilePanel.add(profileTextField, pc);
+JButton selectProfileButton = new JButton("Select Profile");
+pc.gridx = 0;
+pc.gridy = 1;
+pc.fill = GridBagConstraints.HORIZONTAL;
 
-        JButton selectProfileButton = new JButton("Seleccionar perfil");
-        pc.gridx = 0;
-        pc.gridy = 1;
-        pc.fill = GridBagConstraints.HORIZONTAL;
-        profilePanel.add(selectProfileButton, pc);
+// Crear el JComboBox con las opciones A, B y C
+String[] options = {"A", "B", "C"};
+JComboBox<String> profileComboBox = new JComboBox<>(options);
 
-        JButton createProfileButton = new JButton("Crear perfil");
+// Acción del botón para abrir la lista de selección
+selectProfileButton.addActionListener(e -> {
+    // Obtener la opción seleccionada
+    String selectedOption = (String) profileComboBox.getSelectedItem();
+    
+    // Mostrar la opción seleccionada
+    System.out.println("Selected Profile: " + selectedOption);
+});
+
+// Añadir el JComboBox al contenedor (si es necesario)
+pc.gridx = 0;
+pc.gridy = 2;
+container.add(profileComboBox, pc);
+
+
+        selectProfileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                Profile secundaria = new Profile();
+                secundaria.setVisible(true);
+
+            }
+        });
+
+
+        JButton createProfileButton = new JButton("Create profile");
         pc.gridx = 1;
         pc.gridy = 1;
         profilePanel.add(createProfileButton, pc);
 
+        createProfileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                Profile secundaria = new Profile();
+                secundaria.setVisible(true);
+
+            }
+        });
 
         image.add(picLabel);
         image.add(profilePanel);
@@ -103,7 +138,10 @@ public class GameMenu extends JFrame{
 
     }
     public static void main(String args[]){
-        GameMenu g = new GameMenu();
+        SwingUtilities.invokeLater(() -> {
+            GameMenu ventana = new GameMenu();
+            ventana.setVisible(true);
+        });
     }
     
 }

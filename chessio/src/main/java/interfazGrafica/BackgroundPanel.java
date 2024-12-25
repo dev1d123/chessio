@@ -43,6 +43,8 @@ public class BackgroundPanel extends JPanel{
         buttonContainer.add(createButton("menu/challenge.png"));
         buttonContainer.add(createButton("menu/settings.png"));
 
+
+
         add(buttonContainer);
     }
     private JButton createButton(String imagePath) {
@@ -55,8 +57,8 @@ public class BackgroundPanel extends JPanel{
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         button.setContentAreaFilled(false);
-        button.setSize(100, 100); // Establece el tamaño fijo
-        button.setAlignmentX(CENTER_ALIGNMENT); // Centra el botón horizontalmente
+        button.setSize(100, 100); 
+        button.setAlignmentX(CENTER_ALIGNMENT);
 
         return button;
     }
