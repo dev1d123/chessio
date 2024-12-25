@@ -14,7 +14,6 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -59,29 +58,12 @@ public class GameMenu extends JFrame{
         pc.gridx = 1;
         pc.gridy = 0;
         profilePanel.add(profileTextField, pc);
-JButton selectProfileButton = new JButton("Select Profile");
-pc.gridx = 0;
-pc.gridy = 1;
-pc.fill = GridBagConstraints.HORIZONTAL;
 
-// Crear el JComboBox con las opciones A, B y C
-String[] options = {"A", "B", "C"};
-JComboBox<String> profileComboBox = new JComboBox<>(options);
-
-// Acción del botón para abrir la lista de selección
-selectProfileButton.addActionListener(e -> {
-    // Obtener la opción seleccionada
-    String selectedOption = (String) profileComboBox.getSelectedItem();
-    
-    // Mostrar la opción seleccionada
-    System.out.println("Selected Profile: " + selectedOption);
-});
-
-// Añadir el JComboBox al contenedor (si es necesario)
-pc.gridx = 0;
-pc.gridy = 2;
-container.add(profileComboBox, pc);
-
+        JButton selectProfileButton = new JButton("Select profile");
+        pc.gridx = 0;
+        pc.gridy = 1;
+        pc.fill = GridBagConstraints.HORIZONTAL;
+        profilePanel.add(selectProfileButton, pc);
 
         selectProfileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
