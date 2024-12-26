@@ -3,18 +3,22 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 
-public class Profile implements Serializable {
+public class ProfileC implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String name;
+    private String password;
+
     private ArrayList<Integer> challenge;
-    private Settings config;
+    //private Settings config;
     private ArrayList<Partida> historial;
 
-    public Profile(){
+    public ProfileC(){
         this.name = "Unknown";
         this.challenge = new ArrayList<>();
-        this.config = new Settings();   
+        this.password = "ñññ";
+
+       //this.config = new Settings();   
         this.historial = new ArrayList<>();
 
     }
@@ -25,7 +29,13 @@ public class Profile implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    public String getPassword() {
+        return password;
+    }
 
+    public void setPassword(String pass) {
+        this.password = pass;
+    }
     public ArrayList<Integer> getChallenge() {
         return challenge;
     }
@@ -33,7 +43,7 @@ public class Profile implements Serializable {
     public void setChallenge(ArrayList<Integer> challenge) {
         this.challenge = challenge;
     }
-
+    /*
     public Settings getConfig() {
         return config;
     }
@@ -41,7 +51,7 @@ public class Profile implements Serializable {
     public void setConfig(Settings config) {
         this.config = config;
     }
-
+ */
     public ArrayList<Partida> getHistorial() {
         return historial;
     }
