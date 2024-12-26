@@ -67,8 +67,7 @@ public class GameMenu extends JFrame{
 
         selectProfileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                Profile secundaria = new Profile();
-                secundaria.setVisible(true);
+                SelectProfile secundaria = new SelectProfile();
 
             }
         });
@@ -82,7 +81,6 @@ public class GameMenu extends JFrame{
         createProfileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 CreateProfile secundaria = new CreateProfile();
-                secundaria.setVisible(true);
 
             }
         });

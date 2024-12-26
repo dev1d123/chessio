@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class SelectProfile {
+public class SelectProfile  extends JFrame{
 
     private JFrame frame;
     private JPanel panel;
@@ -19,7 +19,6 @@ public class SelectProfile {
 
     public SelectProfile() {
         frame = new JFrame("Select Profile");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 500);
 
         panel = new JPanel();
@@ -247,7 +246,7 @@ public class SelectProfile {
     }
     
 
-    private String getSelectedProfile() {
+    public String getSelectedProfile() {
         if (profileGroup.getSelection() != null) {
             return profileGroup.getSelection().getActionCommand();
         }
