@@ -92,10 +92,12 @@ public class CreateProfile extends JFrame {
                 String password = new String(passwordField.getPassword());
 
                 //Comprobar que el nombre no se repita!
-                File dataFolder = new File("../data");
+                File dataFolder = new File("chessio/src/main/resources/data");
                 if(!dataFolder.exists()){
+                    System.out.println("No existe");
                     dataFolder.mkdirs();
                 }
+                System.out.println("waos1");
                 boolean userExists = false;
                 if (dataFolder.isDirectory()) {
                     for (File file : Objects.requireNonNull(dataFolder.listFiles())) {
