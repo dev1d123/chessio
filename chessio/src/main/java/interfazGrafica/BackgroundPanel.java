@@ -10,13 +10,14 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 public class BackgroundPanel extends JPanel{
     private Image backgroundImage;
 
-    public BackgroundPanel(){
+    public BackgroundPanel(GameMenu parent){
         backgroundImage = Toolkit.getDefaultToolkit().createImage(getClass().getClassLoader().getResource("menu/background.jpg"));
         //agregar todos los botones y titulos 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); 
@@ -38,11 +39,45 @@ public class BackgroundPanel extends JPanel{
         buttonContainer.setLayout(new BoxLayout(buttonContainer, BoxLayout.Y_AXIS));
         buttonContainer.setOpaque(false); 
 
-        buttonContainer.add(createButton("menu/play.png"));
-        buttonContainer.add(createButton("menu/aboutus.png"));
-        buttonContainer.add(createButton("menu/challenge.png"));
-        buttonContainer.add(createButton("menu/settings.png"));
+        JButton playButton = createButton("menu/play.png");
+        JButton aboutButton = createButton("menu/aboutus.png");
+        JButton challengeButton = createButton("menu/challenge.png");
+        JButton settingsButton = createButton("menu/settings.png");
 
+        buttonContainer.add(playButton);
+        buttonContainer.add(aboutButton);
+        buttonContainer.add(challengeButton);
+        buttonContainer.add(settingsButton);
+
+        playButton.addActionListener(e -> {
+            if (parent.getUserSelected() == null) {
+                JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                System.out.println("Iniciando el juego...");
+                setVisible(false);
+                parent.setVisible(false);
+            }
+        });
+
+        aboutButton.addActionListener(e -> {
+            System.out.println("Mostrando información sobre nosotros...");
+        });
+
+        challengeButton.addActionListener(e -> {
+            if (parent.getUserSelected() == null) {
+                JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                System.out.println("Iniciando un desafío...");
+            }
+        });
+
+        settingsButton.addActionListener(e -> {
+            if (parent.getUserSelected() == null) {
+                JOptionPane.showMessageDialog(null, "You must be registered to access the configuration.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                System.out.println("Abriendo configuración...");
+            }
+        });
 
 
         add(buttonContainer);

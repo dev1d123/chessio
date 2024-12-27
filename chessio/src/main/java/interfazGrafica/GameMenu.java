@@ -97,7 +97,7 @@ public class GameMenu extends JFrame{
         image.add(picLabel);
         image.add(profilePanel);
 
-        JPanel space = new BackgroundPanel();
+        JPanel space = new BackgroundPanel(this);
 
         c.gridx = 0;
         c.gridy = 0;
@@ -128,6 +128,9 @@ public class GameMenu extends JFrame{
     }
     public void setUserSelected(ProfileC perfil){
         this.userSelected = perfil;
+    }
+    public ProfileC getUserSelected(){
+        return this.userSelected;
     }
     public static void main(String args[]){
         SwingUtilities.invokeLater(() -> {
