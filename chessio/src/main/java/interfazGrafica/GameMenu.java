@@ -21,9 +21,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import unsa.assets.ProfileC;
+
 public class GameMenu extends JFrame{
+
+    ProfileC userSelected;
+
     public GameMenu(){
-        setTitle("Chesio");
+        setTitle("Chessio");
         setSize(1200, 800);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,12 +70,19 @@ public class GameMenu extends JFrame{
         pc.fill = GridBagConstraints.HORIZONTAL;
         profilePanel.add(selectProfileButton, pc);
 
-        selectProfileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                SelectProfile secundaria = new SelectProfile();
+        selectProfileButton.addActionListener(e -> {
+            SelectProfile selectProfileDialog = new SelectProfile(this);
 
+            userSelected = selectProfileDialog.getSelectedProfile();   
+
+            if (userSelected != null) {
+                profileTextField.setText(userSelected.getName());
+            } else {
+                profileTextField.setText("");
+                System.out.println("No profile selected.");
             }
         });
+        
 
 
         JButton createProfileButton = new JButton("Create profile");
@@ -78,11 +90,8 @@ public class GameMenu extends JFrame{
         pc.gridy = 1;
         profilePanel.add(createProfileButton, pc);
 
-        createProfileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                CreateProfile secundaria = new CreateProfile();
-
-            }
+        createProfileButton.addActionListener(e ->{
+            CreateProfile selectProfileDialog = new CreateProfile(this);
         });
 
         image.add(picLabel);
@@ -116,6 +125,9 @@ public class GameMenu extends JFrame{
 
         
 
+    }
+    public void setUserSelected(ProfileC perfil){
+        this.userSelected = perfil;
     }
     public static void main(String args[]){
         SwingUtilities.invokeLater(() -> {

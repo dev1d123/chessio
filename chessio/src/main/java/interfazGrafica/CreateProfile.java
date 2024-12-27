@@ -15,11 +15,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Objects;
 
-public class CreateProfile extends JFrame {
-    public CreateProfile() {
-        setTitle("Inicio de Sesión");
+public class CreateProfile extends JDialog {
+    public CreateProfile(Frame parent) {
+        super(parent, "Inicio de Sesión", true);
         setSize(400, 300);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(parent);
 
         JPanel mainPanel = new JPanel() {
             @Override
@@ -33,7 +33,7 @@ public class CreateProfile extends JFrame {
         mainPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-        
+
         JLabel title = new JLabel("Bienvenido");
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setForeground(Color.BLACK);
@@ -41,7 +41,7 @@ public class CreateProfile extends JFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         mainPanel.add(title, gbc);
-        
+
         JLabel userLabel = new JLabel("Usuario:");
         userLabel.setForeground(Color.BLACK);
         userLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -56,7 +56,6 @@ public class CreateProfile extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(userField, gbc);
 
-        // Crear el campo Contraseña
         JLabel passwordLabel = new JLabel("Contraseña:");
         passwordLabel.setForeground(Color.BLACK);
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -70,7 +69,6 @@ public class CreateProfile extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(passwordField, gbc);
 
-        // Botón de inicio de sesión
         JButton loginButton = new JButton("Iniciar Sesión");
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
         loginButton.setBackground(new Color(50, 150, 250));
@@ -84,20 +82,17 @@ public class CreateProfile extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(loginButton, gbc);
 
-        // Evento del botón
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String user = userField.getText();
                 String password = new String(passwordField.getPassword());
 
-                //Comprobar que el nombre no se repita!
                 File dataFolder = new File("chessio/src/main/resources/data");
-                if(!dataFolder.exists()){
-                    System.out.println("No existe");
+                if (!dataFolder.exists()) {
                     dataFolder.mkdirs();
                 }
-                System.out.println("waos1");
+
                 boolean userExists = false;
                 if (dataFolder.isDirectory()) {
                     for (File file : Objects.requireNonNull(dataFolder.listFiles())) {
@@ -115,34 +110,28 @@ public class CreateProfile extends JFrame {
                     }
                 }
 
-                if(userExists){
-                    JOptionPane.showMessageDialog(CreateProfile.this,  "El nombre de usuario ya existe. Intente con otro.", "Error", JOptionPane.ERROR_MESSAGE);
+                if (userExists) {
+                    JOptionPane.showMessageDialog(CreateProfile.this, "El nombre de usuario ya existe. Intente con otro.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    // Crear el nuevo perfil
                     ProfileC perfilCreado = new ProfileC();
                     perfilCreado.setName(user);
                     perfilCreado.setPassword(password);
 
-                    // Guardar el perfil en un archivo
                     File profileFile = new File(dataFolder, user + ".dat");
                     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(profileFile))) {
                         oos.writeObject(perfilCreado);
                         JOptionPane.showMessageDialog(CreateProfile.this, "Creación de cuenta exitosa", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                        CreateProfile.this.dispose();
+                        dispose();
                     } catch (IOException ex) {
-                        System.out.println(ex.getMessage());
                         JOptionPane.showMessageDialog(CreateProfile.this, "Error al guardar el perfil: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
 
-        // Agregar el panel a la ventana
         add(mainPanel);
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new CreateProfile());
-    }
+
 }

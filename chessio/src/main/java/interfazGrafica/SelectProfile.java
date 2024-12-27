@@ -10,16 +10,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class SelectProfile  extends JFrame{
+public class SelectProfile  extends JDialog {
 
-    private JFrame frame;
     private JPanel panel;
     private ButtonGroup profileGroup;
     private JTextField passwordField;
+    private ProfileC selectedProfileRet;
 
-    public SelectProfile() {
-        frame = new JFrame("Select Profile");
-        frame.setSize(600, 500);
+    private GameMenu parent;
+
+    public SelectProfile(GameMenu parent) {
+        super(parent, "Select Profile", true);
+        setSize(600, 500);
+        setLocationRelativeTo(parent); 
+        this.parent = parent;
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -87,8 +91,8 @@ public class SelectProfile  extends JFrame{
 
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
-        frame.add(panel);
-        frame.setVisible(true);
+        add(panel);
+        setVisible(true);
     }
 
     private JPanel createProfileCard(String profileName) {
@@ -146,16 +150,16 @@ public class SelectProfile  extends JFrame{
     
 
     private void handleAccess() {
-        String selectedProfile = getSelectedProfile();
+        String selectedProfile = profileGroup.getSelection().getActionCommand();
         String password = passwordField.getText();
 
         if (selectedProfile == null) {
-            JOptionPane.showMessageDialog(frame, "Please select a profile.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a profile.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (password.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Please enter your password.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter your password.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -170,36 +174,38 @@ public class SelectProfile  extends JFrame{
                 }
                 System.out.println("Access granted for profile: " + tempP.getName());
                 System.out.println("Access granted for pass: " + tempP.getPassword());
-
                 if(password.equals(tempP.getPassword())){
-                    JOptionPane.showMessageDialog(frame, "Access granted for profile: " + tempP.getName());
+                    JOptionPane.showMessageDialog(this, "Access granted for profile: " + tempP.getName());
+                    selectedProfileRet = tempP; 
+                    dispose();
+
                 }else{
-                    JOptionPane.showMessageDialog(frame, "Incorrect password. Access denied.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Incorrect password. Access denied.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
     
 
             }catch(IOException | ClassNotFoundException e){
-                JOptionPane.showMessageDialog(frame, "Failed to read the profile file.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to read the profile file.", "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
 
         }else{
-            JOptionPane.showMessageDialog(frame, "Profile file not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Profile file not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }
 
     private void handleDelete() {
-        String selectedProfile = getSelectedProfile();
+        String selectedProfile = profileGroup.getSelection().getActionCommand();
         String password = passwordField.getText();
     
         if (selectedProfile == null) {
-            JOptionPane.showMessageDialog(frame, "Please select a profile to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a profile to delete.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
     
         if (password.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Please enter your password.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter your password.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
     
@@ -208,17 +214,14 @@ public class SelectProfile  extends JFrame{
     
         if (profileFile.exists() && profileFile.isFile()) {
             try {
-                // Deserializar el archivo para obtener el objeto ProfileC
                 ProfileC tempP;
                 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(profileFile))) {
                     tempP = (ProfileC) ois.readObject();
                 }
     
-                // Validar la contraseña
                 if (password.equals(tempP.getPassword())) {
-                    // Confirmar eliminación
                     int confirmation = JOptionPane.showConfirmDialog(
-                        frame,
+                        this,
                         "Are you sure you want to delete the profile: " + tempP.getName() + "?",
                         "Confirm Delete",
                         JOptionPane.YES_NO_OPTION
@@ -226,34 +229,28 @@ public class SelectProfile  extends JFrame{
     
                     if (confirmation == JOptionPane.YES_OPTION) {
                         if (profileFile.delete()) {
-                            JOptionPane.showMessageDialog(frame, "Profile " + tempP.getName() + " deleted successfully.");
-                            frame.dispose();
-                            SwingUtilities.invokeLater(SelectProfile::new); // Reiniciar la ventana para reflejar cambios
+                            JOptionPane.showMessageDialog(this, "Profile " + tempP.getName() + " deleted successfully.");
+                            
+                            dispose();
+
+                            
                         } else {
-                            JOptionPane.showMessageDialog(frame, "Failed to delete the profile.", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "Failed to delete the profile.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Incorrect password. Access denied.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Incorrect password. Access denied.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (IOException | ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, "Failed to read the profile file.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to read the profile file.", "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(frame, "Profile file not found.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Profile file not found.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+    public ProfileC getSelectedProfile() {
+        return selectedProfileRet;
 
-    public String getSelectedProfile() {
-        if (profileGroup.getSelection() != null) {
-            return profileGroup.getSelection().getActionCommand();
-        }
-        return null;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(SelectProfile::new);
     }
 }
