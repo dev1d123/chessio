@@ -78,6 +78,8 @@ public class Juego {
         Player white = (j1.isWhite()) ? j1 : j2;
         Player black = (!j1.isWhite()) ? j1 : j2;
         boolean end = true;
+
+    
         do{
             if(turno%2 == 0){
                 //trabajamos con white    
@@ -87,7 +89,9 @@ public class Juego {
                 Casilla selec = null;
                 do{
                     JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
+                    
                     Pair par = tab.seleccionarElemento();
+                    
                     /*
                     int xSelect = sc.nextInt();
                     int ySelect = sc.nextInt();
@@ -147,6 +151,7 @@ public class Juego {
             tabla.imprimirTabla();
             turno++;
         }while(end);
+        tab.dispose();
     }
     
     public Casilla seleccionarPieza(Player p, int x, int y){ //jugador

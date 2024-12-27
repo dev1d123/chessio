@@ -23,7 +23,7 @@ public class TableroGUI extends JFrame {
         setTitle("Tablero Chessio");
         setSize(640, 640);
         setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(8, 8));
 
@@ -89,10 +89,7 @@ public class TableroGUI extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("Has presionado el boton " + a/8 + ", " + a%8);
-
-                    seleccion = new Pair(a / 8, a % 8);
-
-                    latch.countDown();
+                    notificarSeleccion(new Pair(a / 8, a % 8));
                 }
                 
             });
@@ -102,16 +99,19 @@ public class TableroGUI extends JFrame {
         repaint();     
     }
     //Esperar a que haga click -> CountDownLatch
+    public synchronized void notificarSeleccion(Pair seleccion) {
+        this.seleccion = seleccion;
+        notify(); // Notifica a la espera en seleccionarElemento
+    }
+    public synchronized Pair seleccionarElemento() {
+        System.out.println("Esperando al usuario!!");
     
-    public Pair seleccionarElemento(){
-        
-        latch = new CountDownLatch(1); 
         try {
-            latch.await();
+            wait(); // Espera hasta que sea notificado
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+    
         return seleccion;
     }
     public void reload(){

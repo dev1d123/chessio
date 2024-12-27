@@ -32,6 +32,7 @@ public class GameMenu extends JFrame{
         setSize(1200, 800);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         createContents();

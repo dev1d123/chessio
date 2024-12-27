@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.concurrent.CountDownLatch;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -12,7 +13,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.Border;
+
+import game.Game;
+import source.Juego;
 
 public class BackgroundPanel extends JPanel{
     private Image backgroundImage;
@@ -51,13 +57,36 @@ public class BackgroundPanel extends JPanel{
 
         playButton.addActionListener(e -> {
             if (parent.getUserSelected() == null) {
-                JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE);
+               JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                System.out.println("Iniciando el juego...");
+
                 setVisible(false);
                 parent.setVisible(false);
+
+                SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        Juego j = new Juego();
+                        TableroGUI tablero = new TableroGUI(j);
+                        SwingUtilities.invokeLater(() ->
+                            JOptionPane.showMessageDialog(null, "El tablero ha sido creado")
+                        );
+
+                        j.iniciarJuego(tablero);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        setVisible(true);
+                        parent.setVisible(true);
+                    }
+                };
+
+                worker.execute();
             }
         });
+
 
         aboutButton.addActionListener(e -> {
             System.out.println("Mostrando información sobre nosotros...");
