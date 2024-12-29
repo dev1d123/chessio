@@ -64,8 +64,11 @@ public class BackgroundPanel extends JPanel{
 
                 boolean esJuegoLocal = sg.isLocalGame();
 
+            
                 if (esJuegoLocal) {
                     System.out.println("El usuario seleccionó Juego Local.");
+                    
+                
                 } else {
                     System.out.println("El usuario seleccionó Juego Online.");
                     if (parent.getUserSelected() == null) {
@@ -116,11 +119,9 @@ public class BackgroundPanel extends JPanel{
         });
 
         settingsButton.addActionListener(e -> {
-            if (parent.getUserSelected() == null) {
-                JOptionPane.showMessageDialog(null, "You must be registered to access the configuration.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                System.out.println("Abriendo configuración...");
-            }
+            Settings settings = new Settings(parent);
+
+
         });
 
 
