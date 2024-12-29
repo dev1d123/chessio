@@ -56,13 +56,25 @@ public class BackgroundPanel extends JPanel{
         buttonContainer.add(settingsButton);
 
         playButton.addActionListener(e -> {
-            if (parent.getUserSelected() == null) {
-               JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
 
                 setVisible(false);
                 parent.setVisible(false);
 
+                SelectGame sg = new SelectGame(parent);
+
+                boolean esJuegoLocal = sg.isLocalGame();
+
+                if (esJuegoLocal) {
+                    System.out.println("El usuario seleccionó Juego Local.");
+                } else {
+                    System.out.println("El usuario seleccionó Juego Online.");
+                    if (parent.getUserSelected() == null) {
+                        JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE); 
+                    }
+
+                }
+
+                /* 
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
                     @Override
                     protected Void doInBackground() throws Exception {
@@ -84,7 +96,10 @@ public class BackgroundPanel extends JPanel{
                 };
 
                 worker.execute();
-            }
+                */
+           
+
+
         });
 
 
