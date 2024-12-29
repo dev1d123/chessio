@@ -27,7 +27,16 @@ public class GameMenu extends JFrame{
 
     ProfileC userSelected;
 
+    public boolean helpSettings;
+    public String texturesSettings;
+    public boolean timeSettings;
+
+
     public GameMenu(){
+        helpSettings = true;
+        texturesSettings = "default";
+        timeSettings = true;
+
         setTitle("Chessio");
         setSize(1200, 800);
         setResizable(false);

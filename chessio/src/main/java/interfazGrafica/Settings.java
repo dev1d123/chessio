@@ -10,7 +10,7 @@ public class Settings extends JDialog {
     private String selectedTexture = "Clásico"; 
     private boolean timerEnabled = false; 
 
-    public Settings(Frame parent) {
+    public Settings(GameMenu parent) {
         super(parent, "Chess Settings", true);
         setSize(600, 500);
         setLocationRelativeTo(parent);
@@ -86,7 +86,14 @@ public class Settings extends JDialog {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                parent.helpSettings = hintsEnabled;
+                parent.texturesSettings = selectedTexture;
+                parent.timeSettings = timerEnabled;
+                
                 JOptionPane.showMessageDialog(Settings.this, "Successfully saved configurations.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                
+                
+
                 dispose();
             }
         });
@@ -116,25 +123,6 @@ public class Settings extends JDialog {
         }
     }
 
-    public boolean isHintsEnabled() {
-        return hintsEnabled;
-    }
-
-    public String getSelectedTexture() {
-        return selectedTexture;
-    }
-
-    public boolean isTimerEnabled() {
-        return timerEnabled;
-    }
 
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Settings settings = new Settings(null);
-            System.out.println("Ayudas activadas: " + settings.isHintsEnabled());
-            System.out.println("Textura seleccionada: " + settings.getSelectedTexture());
-            System.out.println("Temporizador habilitado: " + settings.isTimerEnabled());
-        });
-    }
 }
