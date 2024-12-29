@@ -89,11 +89,8 @@ public class Settings extends JDialog {
                 parent.helpSettings = hintsEnabled;
                 parent.texturesSettings = selectedTexture;
                 parent.timeSettings = timerEnabled;
-                
-                JOptionPane.showMessageDialog(Settings.this, "Successfully saved configurations.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                
-                
 
+                JOptionPane.showMessageDialog(Settings.this, "Successfully saved configurations.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             }
         });

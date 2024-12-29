@@ -107,7 +107,7 @@ public class BackgroundPanel extends JPanel{
 
 
         aboutButton.addActionListener(e -> {
-            System.out.println("Mostrando información sobre nosotros...");
+            AboutUs ab = new AboutUs(parent);
         });
 
         challengeButton.addActionListener(e -> {
