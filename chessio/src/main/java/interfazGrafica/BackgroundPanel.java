@@ -22,8 +22,15 @@ import source.Juego;
 
 public class BackgroundPanel extends JPanel{
     private Image backgroundImage;
+    public boolean helpSettings;
+    public String texturesSettings;
+    public boolean timeSettings;
 
-    public BackgroundPanel(GameMenu parent){
+    public BackgroundPanel(GameMenu parent, boolean h, String t, boolean time){
+        this.helpSettings = h;
+        this.texturesSettings = t;
+        this.timeSettings = time;
+        
         backgroundImage = Toolkit.getDefaultToolkit().createImage(getClass().getClassLoader().getResource("menu/background.jpg"));
         //agregar todos los botones y titulos 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); 

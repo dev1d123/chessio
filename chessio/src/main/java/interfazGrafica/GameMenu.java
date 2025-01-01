@@ -107,7 +107,8 @@ public class GameMenu extends JFrame{
         image.add(picLabel);
         image.add(profilePanel);
 
-        JPanel space = new BackgroundPanel(this);
+    
+        JPanel space = new BackgroundPanel(this, helpSettings, texturesSettings, timeSettings);
 
         c.gridx = 0;
         c.gridy = 0;
