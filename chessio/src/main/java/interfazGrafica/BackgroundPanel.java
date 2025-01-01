@@ -77,7 +77,7 @@ public class BackgroundPanel extends JPanel{
 
                 }
 
-                /* 
+                
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
                     @Override
                     protected Void doInBackground() throws Exception {
@@ -99,7 +99,7 @@ public class BackgroundPanel extends JPanel{
                 };
 
                 worker.execute();
-                */
+                
            
 
 
