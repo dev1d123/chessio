@@ -23,10 +23,10 @@ import source.Juego;
 public class BackgroundPanel extends JPanel{
     private Image backgroundImage;
     public boolean helpSettings;
-    public String texturesSettings;
+    public int texturesSettings;
     public boolean timeSettings;
 
-    public BackgroundPanel(GameMenu parent, boolean h, String t, boolean time){
+    public BackgroundPanel(GameMenu parent, boolean h, int t, boolean time){
         this.helpSettings = h;
         this.texturesSettings = t;
         this.timeSettings = time;
@@ -83,8 +83,10 @@ public class BackgroundPanel extends JPanel{
                     }
 
                 }
+                System.out.println("Help Settings: " + parent.helpSettings);
+                System.out.println("Textures Settings: " + parent.texturesSettings);
+                System.out.println("Time Settings: " + parent.timeSettings);
 
-                
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
                     @Override
                     protected Void doInBackground() throws Exception {
@@ -127,8 +129,9 @@ public class BackgroundPanel extends JPanel{
 
         settingsButton.addActionListener(e -> {
             Settings settings = new Settings(parent);
-
-
+            System.out.println("Parent Help Settings: " + parent.helpSettings);
+            System.out.println("Parent Textures Settings: " + parent.texturesSettings);
+            System.out.println("Parent Time Settings: " + parent.timeSettings);
         });
 
 

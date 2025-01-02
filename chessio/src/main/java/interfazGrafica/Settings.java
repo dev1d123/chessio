@@ -7,8 +7,9 @@ import java.awt.event.ActionListener;
 
 public class Settings extends JDialog {
     private boolean hintsEnabled = true; 
-    private String selectedTexture = "Clásico"; 
+    private int selectedTexture = 0; 
     private boolean timerEnabled = false; 
+    private String selected = "default"; 
 
     public Settings(GameMenu parent) {
         super(parent, "Chess Settings", true);
@@ -69,9 +70,11 @@ public class Settings extends JDialog {
         texturePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         updateTexturePreview(textureComboBox.getSelectedItem().toString(), texturePreview);
         textureComboBox.addActionListener(e -> {
-            selectedTexture = (String) textureComboBox.getSelectedItem();
-            updateTexturePreview(selectedTexture, texturePreview);
+            selectedTexture = textureComboBox.getSelectedIndex(); 
+            selected = (String) textureComboBox.getSelectedItem(); 
+            updateTexturePreview(selected, texturePreview);
         });
+        
         JPanel texturePanel = new JPanel(new BorderLayout());
         texturePanel.add(textureComboBox, BorderLayout.NORTH);
         texturePanel.add(texturePreview, BorderLayout.CENTER);
@@ -99,7 +102,9 @@ public class Settings extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 parent.helpSettings = hintsEnabled;
-                parent.texturesSettings = selectedTexture;
+
+                parent.texturesSettings = selectedTexture; 
+                
                 parent.timeSettings = timerEnabled;
 
                 JOptionPane.showMessageDialog(Settings.this, "Successfully saved configurations.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -155,22 +160,14 @@ public class Settings extends JDialog {
         }
     
         if (imagePath != null) {
-            // Cargar la imagen
             ImageIcon originalIcon = new ImageIcon(imagePath);
             Image originalImage = originalIcon.getImage();
             
-            // Redimensionar la imagen
-            int newWidth = 600; // Ancho deseado
-            int newHeight = 100; // Altura deseada
+            int newWidth = 600;
+            int newHeight = 100;
             Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
     
-            // Establecer la imagen redimensionada en el JLabel
             previewLabel.setIcon(new ImageIcon(resizedImage));
         }
     }
-    
-    
-
-
-
 }

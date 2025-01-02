@@ -28,13 +28,13 @@ public class GameMenu extends JFrame{
     ProfileC userSelected;
 
     public boolean helpSettings;
-    public String texturesSettings;
+    public int texturesSettings;
     public boolean timeSettings;
 
 
     public GameMenu(){
         helpSettings = true;
-        texturesSettings = "default";
+        texturesSettings = 0;
         timeSettings = true;
 
         setTitle("Chessio");
