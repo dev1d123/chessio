@@ -14,6 +14,32 @@ public class TexturesPath {
     
         return path+select+".png";
     }
+    public static String textureToInt(int code) {
+        if (code == 0) {
+            return "Classic";
+        } else if (code == 1) {
+            return "Medieval"; 
+        } else if (code == 2) {
+            return "Fantasy"; 
+        } else if (code == 3) {
+            return "Terror"; 
+        } else if (code == 4) {
+            return "Animals"; 
+        } else if (code == 5) {
+            return "Reptiles";
+        } else if (code == 6) {
+            return "Dino"; 
+        } else if (code == 7) {
+            return "Aquatic 1";
+        } else if (code == 8) {
+            return "Aquatic 2";
+        } else if (code == 9) {
+            return "Insects";
+        } else {
+            return "Unknown";
+        }
+    }
+    
 }
 
  
