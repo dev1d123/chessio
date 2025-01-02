@@ -12,7 +12,7 @@ public class Main {
     public static void main(String args[]){
         
         //recibir instrucciones....jugador1, jugador2 -> opciones(skins, efectos de sonido y musica)
-        Juego j = new Juego();
+        Juego j = new Juego(0);
         //j.iniciarJuego();
 
     }

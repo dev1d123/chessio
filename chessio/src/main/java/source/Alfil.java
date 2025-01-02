@@ -6,6 +6,8 @@ package source;
 
 import java.util.ArrayList;
 
+import interfazGrafica.TexturesPath;
+
 /**
  *
  * @author Windows
@@ -14,10 +16,11 @@ public class Alfil extends Pieza implements PiezaInterfaz{
     //Inicia el juego y cuando se corona
     //x, y, signo
     
-    public Alfil(int x, int y, Player player) {
-        super(x, y, 'A', player);
-        imgPath1 = "white-bishop.png";
-        imgPath2 = "black-bishop.png";
+    public Alfil(int x, int y, Player player, int textureID) {
+        super(x, y, 'A', player, textureID);
+        
+        imgPath1 = TexturesPath.getPath(false, textureID, 3);
+        imgPath2 = TexturesPath.getPath(true, textureID, 3);
     }
 
     @Override

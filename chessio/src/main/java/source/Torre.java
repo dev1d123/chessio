@@ -6,6 +6,8 @@ package source;
 
 import java.util.ArrayList;
 
+import interfazGrafica.TexturesPath;
+
 /**
  *
  * @author Windows
@@ -14,10 +16,10 @@ public class Torre extends Pieza implements PiezaInterfaz{
     
     //Inicia el juego y cuando se corona
     //x, y, signo
-    public Torre(int x, int y, Player player) {
-        super(x, y, 'T', player);
-        imgPath1 = "white-rook.png";
-        imgPath2 = "black-rook.png";
+    public Torre(int x, int y, Player player, int textureID) {
+        super(x, y, 'T', player, textureID);
+        imgPath1 = TexturesPath.getPath(false, textureID, 1);
+        imgPath2 = TexturesPath.getPath(true, textureID, 1);
     }
 
     @Override

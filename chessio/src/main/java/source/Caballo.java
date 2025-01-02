@@ -6,6 +6,8 @@ package source;
 
 import java.util.ArrayList;
 
+import interfazGrafica.TexturesPath;
+
 /**
  *
  * @author Windows
@@ -13,10 +15,10 @@ import java.util.ArrayList;
 public class Caballo extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
-    public Caballo(int x, int y, Player player) {
-        super(x, y, 'C', player);
-        imgPath1 = "white-knight.png";
-        imgPath2 = "black-knight.png";
+    public Caballo(int x, int y, Player player, int textureID) {
+        super(x, y, 'C', player, textureID);
+        imgPath1 = TexturesPath.getPath(false, textureID, 2);
+        imgPath2 = TexturesPath.getPath(true, textureID, 2);
     }
 
     @Override

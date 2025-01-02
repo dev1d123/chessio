@@ -14,10 +14,10 @@ public class Game {
           */
        
       
-        Juego j = new Juego();
+        Juego j = new Juego(0);
 
         System.out.println("Dandole la informacion al tablero");
-        TableroGUI tablero = new TableroGUI(j);
+        TableroGUI tablero = new TableroGUI(j, true, 0, true);
         JOptionPane.showMessageDialog(null, "El tablero ha sido creado");
         j.iniciarJuego(tablero);
       

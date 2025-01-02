@@ -16,9 +16,11 @@ public class TableroGUI extends JFrame {
     private CountDownLatch latch;
     private Juego juego;
     private JButton[][] buttons;
-
-    public TableroGUI(Juego juego){
+    private int textureID;
+    public TableroGUI(Juego juego, boolean help, int textures, boolean time){
+        this.textureID = textures;
         this.juego = juego;
+
         buttons = new JButton[8][8];
         setTitle("Tablero Chessio");
         setSize(640, 640);
@@ -63,8 +65,8 @@ public class TableroGUI extends JFrame {
                 if(tabla.tabla[i/8][i%8].getPieza().getPlayer().isWhite()){
                     try{
 
-                        Image img = ImageIO.read(getClass().getClassLoader().getResourceAsStream(tabla.tabla[i/8][i%8].getPieza().getPath1()));
-                        Image newImg = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                        Image img = ImageIO.read(getClass().getClassLoader().getResourceAsStream(tabla.tabla[i/8][i%8].getPieza().getPath1(textureID)));
+                        Image newImg = img.getScaledInstance(70, 70, Image.SCALE_SMOOTH);
 
                         ImageIcon icono = new ImageIcon(newImg);
                         btn.setIcon(icono);
@@ -73,8 +75,8 @@ public class TableroGUI extends JFrame {
                     }
                 }else{
                     try{
-                        Image img = ImageIO.read(getClass().getClassLoader().getResourceAsStream(tabla.tabla[i/8][i%8].getPieza().getPath2()));
-                        Image newImg = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                        Image img = ImageIO.read(getClass().getClassLoader().getResourceAsStream(tabla.tabla[i/8][i%8].getPieza().getPath2(textureID)));
+                        Image newImg = img.getScaledInstance(70, 70, Image.SCALE_SMOOTH);
 
                         ImageIcon icono = new ImageIcon(newImg);
                         btn.setIcon(icono);

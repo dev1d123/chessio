@@ -27,37 +27,37 @@ public class Juego {
     //paths -> texturas....
 
 
-    public Juego(){ //La posición puede ser una constante (final)
+    public Juego(int t){ //La posición puede ser una constante (final)
         j1 = new Player("Julio", false, false); //negras....abajo, jugador 1 siempre abajo -> posicion = false
         j2 = new Player("Julian", true, true); //blancas....arriba, jugador 2 siempre arriba -> posicion = true
         tabla = new Tablero();     
 
         // Piezas del jugador j2 (superior)
-        tabla.agregarPieza(new Torre(0, 0, j2)); 
-        tabla.agregarPieza(new Caballo(0, 1, j2));
-        tabla.agregarPieza(new Alfil(0, 2, j2));
-        tabla.agregarPieza(new Reina(0, 3, j2));
-        tabla.agregarPieza(new Rey(0, 4, j2));
-        tabla.agregarPieza(new Alfil(0, 5, j2));
-        tabla.agregarPieza(new Caballo(0, 6, j2));
-        tabla.agregarPieza(new Torre(0, 7, j2));
+        tabla.agregarPieza(new Torre(0, 0, j2, t)); 
+        tabla.agregarPieza(new Caballo(0, 1, j2, t));
+        tabla.agregarPieza(new Alfil(0, 2, j2, t));
+        tabla.agregarPieza(new Reina(0, 3, j2, t));
+        tabla.agregarPieza(new Rey(0, 4, j2, t));
+        tabla.agregarPieza(new Alfil(0, 5, j2, t));
+        tabla.agregarPieza(new Caballo(0, 6, j2,t ));
+        tabla.agregarPieza(new Torre(0, 7, j2,t ));
 
         for (int i = 0; i < 8; i++) {
-            tabla.agregarPieza(new Peon(1, i, j2));
+            tabla.agregarPieza(new Peon(1, i, j2, t));
         }
 
         // Piezas del jugador j1 (inferior)
-        tabla.agregarPieza(new Torre(7, 0, j1));
-        tabla.agregarPieza(new Caballo(7, 1, j1));
-        tabla.agregarPieza(new Alfil(7, 2, j1));
-        tabla.agregarPieza(new Reina(7, 3, j1));
-        tabla.agregarPieza(new Rey(7, 4, j1));
-        tabla.agregarPieza(new Alfil(7, 5, j1));
-        tabla.agregarPieza(new Caballo(7, 6, j1));
-        tabla.agregarPieza(new Torre(7, 7, j1));
+        tabla.agregarPieza(new Torre(7, 0, j1, t));
+        tabla.agregarPieza(new Caballo(7, 1, j1, t));
+        tabla.agregarPieza(new Alfil(7, 2, j1,t));
+        tabla.agregarPieza(new Reina(7, 3, j1,t));
+        tabla.agregarPieza(new Rey(7, 4, j1,t));
+        tabla.agregarPieza(new Alfil(7, 5, j1,t));
+        tabla.agregarPieza(new Caballo(7, 6, j1,t));
+        tabla.agregarPieza(new Torre(7, 7, j1,t));
 
         for (int i = 0; i < 8; i++) {
-            tabla.agregarPieza(new Peon(6, i, j1));
+            tabla.agregarPieza(new Peon(6, i, j1,t));
         }
 
         for (int row = 2; row < 6; row++) {

@@ -2,18 +2,25 @@ package interfazGrafica;
 
 
 public class TexturesPath {
-    public static String getPath(boolean color, int kind, int piece){
-        String path = "chessio/src/main/resources/piecesImage/";
-        if(color){
+    public static String getPath(boolean color, int kind, int piece) {
+        String path = "piecesImage/";
+        if (color) { // Negro
             path += "black/tile";
-        }else{
+            int[] blackOrder = {0, 1, 2, 3, 4, 5};
+            piece = blackOrder[piece];
+        } else { // Blanco
             path += "white/tile";
+            int[] whiteOrder = {5, 4, 3, 2, 1, 0};
+            piece = whiteOrder[piece];
         }
-        int num = kind*6 + piece;
+        int num = kind * 6 + piece;
         String select = String.format("%03d", num);
     
-        return path+select+".png";
+        return path + select + ".png";
     }
+    
+
+
     public static String textureToInt(int code) {
         if (code == 0) {
             return "Classic";

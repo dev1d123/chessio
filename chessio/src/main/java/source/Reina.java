@@ -6,6 +6,8 @@ package source;
 
 import java.util.ArrayList;
 
+import interfazGrafica.TexturesPath;
+
 /**
  *
  * @author Windows
@@ -13,10 +15,10 @@ import java.util.ArrayList;
 public class Reina extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
-    public Reina(int x, int y, Player player) {
-        super(x, y, 'Q', player);
-        imgPath1 = "white-queen.png";
-        imgPath2 = "black-queen.png";
+    public Reina(int x, int y, Player player, int textureID) {
+        super(x, y, 'Q', player, textureID);
+        imgPath1 = TexturesPath.getPath(false, textureID, 4);
+        imgPath2 = TexturesPath.getPath(true, textureID, 4);
     }
 
     @Override

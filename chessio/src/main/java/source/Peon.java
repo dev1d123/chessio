@@ -6,6 +6,8 @@ package source;
 
 import java.util.ArrayList;
 
+import interfazGrafica.TexturesPath;
+
 /**
  *
  * @author Windows
@@ -15,12 +17,13 @@ public class Peon extends Pieza implements PiezaInterfaz{
     //color 
     private boolean primerizo = true;
     
-    public Peon(int x, int y, Player player) {
-        super(x, y, 'P', player);
-        imgPath1 = "white-pawn.png";
-        imgPath2 = "black-pawn.png";
+    public Peon(int x, int y, Player player, int textureID) {
+        super(x, y, 'P', player, textureID);
+
+        imgPath1 = TexturesPath.getPath(false, textureID, 0);
+        imgPath2 = TexturesPath.getPath(true, textureID, 0);
     }
-    
+
     @Override
     public ArrayList<Pair> getMovimientos(Tablero t) {
         determinarSiEsPrimerizo(); //Se determina si el peón esta dando su primer movimiento o no

@@ -90,8 +90,8 @@ public class BackgroundPanel extends JPanel{
                 SwingWorker<Void, Void> worker = new SwingWorker<>() {
                     @Override
                     protected Void doInBackground() throws Exception {
-                        Juego j = new Juego();
-                        TableroGUI tablero = new TableroGUI(j);
+                        Juego j = new Juego(parent.texturesSettings);
+                        TableroGUI tablero = new TableroGUI(j, parent.helpSettings, parent.texturesSettings, parent.timeSettings);
                         SwingUtilities.invokeLater(() ->
                             JOptionPane.showMessageDialog(null, "El tablero ha sido creado")
                         );

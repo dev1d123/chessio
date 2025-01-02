@@ -14,7 +14,7 @@ public class Pieza{
     //private Jugador j
     //private boolean valido
     private char signo;
-    
+    private int textureID;
     private Player player;
             
     private boolean estaClavado;
@@ -36,18 +36,19 @@ public class Pieza{
         imgPath1 = v1;
         imgPath2 = v2;
     }    
-    public String getPath1(){
+    public String getPath1(int textureID){
         return imgPath1;
     }
-    public String getPath2(){
+    public String getPath2(int textureID){
         return imgPath2;
     }
-    public Pieza(int x, int y, char signo, Player player){
+    public Pieza(int x, int y, char signo, Player player, int textureID){
         estaClavado = false;
         this.x = x;
         this.y = y;
         this.signo = signo;
         this.player = player;
+        this.textureID = textureID;
 
     }
 
@@ -85,6 +86,4 @@ public class Pieza{
     public ArrayList<Pair> getMovimientos(Tablero tabla) {
         return null;
     }
-
-    
 }

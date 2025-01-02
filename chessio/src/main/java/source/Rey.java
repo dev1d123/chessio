@@ -2,12 +2,14 @@ package source;
 
 import java.util.ArrayList;
 
+import interfazGrafica.TexturesPath;
+
 public class Rey extends Pieza implements PiezaInterfaz {
     
-    public Rey(int x, int y, Player player) {
-        super(x, y, 'R', player);
-        imgPath1 = "white-king.png";
-        imgPath2 = "black-king.png";
+    public Rey(int x, int y, Player player, int textureID) {
+        super(x, y, 'R', player, textureID);
+        imgPath1 = TexturesPath.getPath(false, textureID, 5);
+        imgPath2 = TexturesPath.getPath(true, textureID, 5);
     }
 
     @Override
