@@ -6,13 +6,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Settings extends JDialog {
+    
     private boolean hintsEnabled = true; 
     private int selectedTexture = 0; 
     private boolean timerEnabled = false; 
+
+
     private String selected = "default"; 
 
-    public Settings(GameMenu parent) {
+    public Settings(GameMenu parent, boolean a, int b, boolean c) {
+
         super(parent, "Chess Settings", true);
+        this.hintsEnabled = a;
+        this.selectedTexture = b;
+        this.timerEnabled = c;
+
         setSize(800, 500);
         setLocationRelativeTo(parent);
 
@@ -41,7 +49,7 @@ public class Settings extends JDialog {
 
         JCheckBox hintsCheckBox = new JCheckBox();
         hintsCheckBox.setSelected(hintsEnabled);
-        hintsCheckBox.addActionListener(e -> hintsEnabled = hintsCheckBox.isSelected());
+        hintsCheckBox.addActionListener(e -> this.hintsEnabled = hintsCheckBox.isSelected());
         gbc.gridx = 1;
         mainPanel.add(hintsCheckBox, gbc);
 
@@ -63,17 +71,17 @@ public class Settings extends JDialog {
             TexturesPath.textureToInt(8),
             TexturesPath.textureToInt(9)
         });
-        textureComboBox.setSelectedItem(selectedTexture);
-        
+        textureComboBox.setSelectedIndex(selectedTexture); 
         JLabel texturePreview = new JLabel();
         texturePreview.setPreferredSize(new Dimension(600, 100));
         texturePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        updateTexturePreview(textureComboBox.getSelectedItem().toString(), texturePreview);
+        updateTexturePreview(textureComboBox.getItemAt(selectedTexture).toString(), texturePreview);
         textureComboBox.addActionListener(e -> {
-            selectedTexture = textureComboBox.getSelectedIndex(); 
-            selected = (String) textureComboBox.getSelectedItem(); 
+            this.selectedTexture = textureComboBox.getSelectedIndex();
+            selected = (String) textureComboBox.getSelectedItem();
             updateTexturePreview(selected, texturePreview);
         });
+        
         
         JPanel texturePanel = new JPanel(new BorderLayout());
         texturePanel.add(textureComboBox, BorderLayout.NORTH);
@@ -89,7 +97,7 @@ public class Settings extends JDialog {
 
         JCheckBox timerCheckBox = new JCheckBox();
         timerCheckBox.setSelected(timerEnabled);
-        timerCheckBox.addActionListener(e -> timerEnabled = timerCheckBox.isSelected());
+        timerCheckBox.addActionListener(e -> this.timerEnabled = timerCheckBox.isSelected());
         gbc.gridx = 1;
         mainPanel.add(timerCheckBox, gbc);
 

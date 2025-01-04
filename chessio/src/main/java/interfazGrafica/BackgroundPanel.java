@@ -128,7 +128,7 @@ public class BackgroundPanel extends JPanel{
         });
 
         settingsButton.addActionListener(e -> {
-            Settings settings = new Settings(parent);
+            Settings settings = new Settings(parent, parent.helpSettings, parent.texturesSettings, parent.timeSettings);
             System.out.println("Parent Help Settings: " + parent.helpSettings);
             System.out.println("Parent Textures Settings: " + parent.texturesSettings);
             System.out.println("Parent Time Settings: " + parent.timeSettings);
