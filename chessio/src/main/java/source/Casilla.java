@@ -10,7 +10,7 @@ public class Casilla {
     //Crear una pieza...que represente a una casilla vacia
     private int x,y;
     private boolean tienePieza = false;
-    
+
     public Casilla(int x, int y, Pieza pieza){
         this.x = x; 
         this.y = y;
@@ -20,6 +20,11 @@ public class Casilla {
     public Casilla(int x, int y){
         this.x = x; 
         this.y = y;
+    }
+    public Casilla(Casilla otra) {
+        this.x = otra.x;
+        this.y = otra.y;
+        this.tienePieza = otra.tienePieza;
     }
 
     public boolean tienePieza() {

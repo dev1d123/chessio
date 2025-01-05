@@ -41,6 +41,6 @@ public class Alfil extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-
+    
     
 }

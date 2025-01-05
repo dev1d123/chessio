@@ -87,4 +87,19 @@ public class Pieza{
     public ArrayList<Pair> getMovimientos(Tablero tabla) {
         return null;
     }
+    public Pieza(Pieza otra) {
+        this.signo = otra.signo;
+        this.textureID = otra.textureID;
+        this.player = otra.player; // Si Player necesita una copia profunda, crea un constructor de copia para Player
+        this.estaClavado = otra.estaClavado;
+        this.imgPath1 = otra.imgPath1;
+        this.imgPath2 = otra.imgPath2;
+    
+        // Copiar la lista de movimientos (si es mutable, usa una nueva instancia)
+        this.movimientos = (otra.movimientos != null) ? new ArrayList<>(otra.movimientos) : null;
+    
+        this.x = otra.x;
+        this.y = otra.y;
+    }
+    
 }

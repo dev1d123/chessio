@@ -21,7 +21,12 @@ public class Player{
         this.color = color;
         this.posicion = posicion;
     }
-
+    public Player(Player otro) {
+        this.nombre = new String(otro.nombre); 
+        this.color = otro.color;              
+        this.posicion = otro.posicion;      
+    }
+    
     public String getNombre() {
         return nombre;
     }
