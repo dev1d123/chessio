@@ -115,8 +115,21 @@ public class Juego {
                     }
     
                     boolean moved = mover(selectedPiece, selection.X, selection.Y, availableMoves);
+
                     if (moved) {
                         System.out.println("Pieza movida.");
+                        if(turno%2 == 0){
+                            if(hayJaque(white, black)){
+
+                            }
+                            //turno de white
+                        }else{
+                            //turno de black.
+                            if(hayJaque(black, white)){
+                                
+                            }
+                        }
+
                         break;
                     }
                 }
@@ -129,7 +142,31 @@ public class Juego {
         tab.dispose();
     }
     
-    
+    public boolean hayJaque(Player p1, Player p2){
+        //comprobar si hay jaque de p1 a p2
+        //obtener la posicion del rey!
+        int reyX = -1;
+        int reyY = -1;
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                Casilla casilla = tabla.tabla[i][j];
+                if(casilla.tienePieza() == false) continue;
+                if(casilla.getPieza() instanceof Rey && casilla.getPieza().getPlayer() == p2){
+                    JOptionPane.showMessageDialog(null, "Hay un rey en " + casilla.getX() + " " + casilla.getY(), "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                    reyX = casilla.getX();
+                    reyY = casilla.getY();
+                }
+            }
+        }
+
+        //obtener todas las coordenadas de ataque de p1!!!
+        
+
+
+        return true;
+    }
+
+
     public Casilla seleccionarPieza(Player p, int x, int y){ //jugador
 
         if(x>=8 || x < 0 || y>=8 || y < 0 ){
