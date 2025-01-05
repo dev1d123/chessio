@@ -105,6 +105,8 @@ public class Juego {
             while (true) {
                 if (selectedPiece == null) {
                     JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
+                    boolean asd = hayJaque(j1, j2, tab);
+                    boolean tra = hayJaque(j2, j1, tab);
                     Pair selection = tab.seleccionarElemento();
                     selectedPiece = seleccionarPieza(currentPlayer, selection.X, selection.Y);
     
@@ -112,12 +114,16 @@ public class Juego {
                         System.out.println("La pieza seleccionada es " + selectedPiece);
                         availableMoves = selectedPiece.getPieza().getMovimientos(tabla);
                         tab.paintMovements(availableMoves);
+                        boolean useless1 = hayJaque(j1, j2, tab);
+                        boolean useless2 = hayJaque(j2, j1, tab);
                         for (Pair move : availableMoves) {
                             System.out.println("Movimiento posible: " + move.X + ", " + move.Y);
                         }
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "Seleccione una posición para mover o seleccione otra pieza.");
+                    boolean asd = hayJaque(j1, j2, tab);
+                    boolean tra = hayJaque(j2, j1, tab);
                     Pair selection = tab.seleccionarElemento();
     
                     Casilla newSelection = seleccionarPieza(currentPlayer, selection.X, selection.Y);
@@ -125,6 +131,9 @@ public class Juego {
                         selectedPiece = newSelection;
                         availableMoves = selectedPiece.getPieza().getMovimientos(tabla);
                         tab.paintMovements(availableMoves);
+                        boolean useless1 = hayJaque(j1, j2, tab);
+                        boolean useless2 = hayJaque(j2, j1, tab);
+
                         System.out.println("Nueva pieza seleccionada: " + selectedPiece);
                         continue;
                     }
@@ -133,20 +142,20 @@ public class Juego {
 
                     if (moved) {
                         System.out.println("Pieza movida.");
-                        /* 
+                        
                         if(turno%2 == 0){
                             if(hayJaque(white, black, tab)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
 
                             }
-                            //turno de white
+                            
                         }else{
                             //turno de black.
                             if(hayJaque(black, white, tab)){
                                 JOptionPane.showMessageDialog(null,"Hay un jaque","Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
                         }
-                        */
+                        
                         break;
                         
                     }

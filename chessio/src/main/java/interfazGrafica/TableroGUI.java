@@ -59,6 +59,7 @@ public class TableroGUI extends JFrame {
     }
     
     public void paintMovements(ArrayList<Pair> mov) {
+        System.out.println("WASDASFVASDFVEDRG");
         for (int i = 0; i < 64; i++) {
             if ((i % 8 + i / 8) % 2 == 0) {
                 buttons[i % 8][i/8].setBackground(Color.WHITE);
@@ -75,6 +76,7 @@ public class TableroGUI extends JFrame {
         }
         revalidate();
         repaint();
+
     }
 
     public void createContents(Tablero tabla) {
