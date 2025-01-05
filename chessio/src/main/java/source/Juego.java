@@ -71,88 +71,64 @@ public class Juego {
     public Tablero getTablero(){
         return tabla;
     }
-    public void iniciarJuego(TableroGUI tab){
+    public void iniciarJuego(TableroGUI tab) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Iniciando juego");
         tabla.imprimirTabla();
+    
         Player white = (j1.isWhite()) ? j1 : j2;
         Player black = (!j1.isWhite()) ? j1 : j2;
         boolean end = true;
-
     
-        do{
-            if(turno%2 == 0){
-                //trabajamos con white    
-                
-                System.out.println("Turno del jugador blancas");
-                //if(casilla != null)
-                Casilla selec = null;
-                do{
+        do {
+            Player currentPlayer = (turno % 2 == 0) ? white : black;
+            System.out.println("Turno del jugador " + (currentPlayer.isWhite() ? "blancas" : "negras"));
+    
+            Casilla selectedPiece = null;
+            ArrayList<Pair> availableMoves = new ArrayList<>();
+    
+            while (true) {
+                if (selectedPiece == null) {
                     JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
-                    
-                    Pair par = tab.seleccionarElemento();
-                    
-                    /*
-                    int xSelect = sc.nextInt();
-                    int ySelect = sc.nextInt();
-                    */
-                    selec = seleccionarPieza(white, par.X , par.Y); 
-                    
-                }while(selec == null);
-                System.out.println("La pieza seleccionada es " + selec);
-                System.out.println("Los movimiento son");
-                //
-                ArrayList<Pair> mov = selec.getPieza().getMovimientos(tabla);
-                tab.paintMovements(mov);
-                //tab.pinta(mov);
-                for(Pair parsito: mov){
-                    System.out.println(parsito.X + ", " + parsito.Y);
+                    Pair selection = tab.seleccionarElemento();
+                    selectedPiece = seleccionarPieza(currentPlayer, selection.X, selection.Y);
+    
+                    if (selectedPiece != null) {
+                        System.out.println("La pieza seleccionada es " + selectedPiece);
+                        availableMoves = selectedPiece.getPieza().getMovimientos(tabla);
+                        tab.paintMovements(availableMoves);
+                        for (Pair move : availableMoves) {
+                            System.out.println("Movimiento posible: " + move.X + ", " + move.Y);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Seleccione una posición para mover o seleccione otra pieza.");
+                    Pair selection = tab.seleccionarElemento();
+    
+                    Casilla newSelection = seleccionarPieza(currentPlayer, selection.X, selection.Y);
+                    if (newSelection != null && newSelection != selectedPiece) {
+                        selectedPiece = newSelection;
+                        availableMoves = selectedPiece.getPieza().getMovimientos(tabla);
+                        tab.paintMovements(availableMoves);
+                        System.out.println("Nueva pieza seleccionada: " + selectedPiece);
+                        continue;
+                    }
+    
+                    boolean moved = mover(selectedPiece, selection.X, selection.Y, availableMoves);
+                    if (moved) {
+                        System.out.println("Pieza movida.");
+                        break;
+                    }
                 }
-                //mover la pieza
-                boolean mover = false;
-                do{
-                    JOptionPane.showMessageDialog(null, "Seleccione una posicion!");
-                    Pair par = tab.seleccionarElemento();
-                    mover = this.mover(selec, par.X, par.Y, mov);
-                 
-                }while(!mover);
-            }else{
-                System.out.println("Turno del jugador negrans");
-                Casilla selec = null;
-                do{
-                    JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
-                    Pair par = tab.seleccionarElemento();
-                    /*
-                    int xSelect = sc.nextInt();
-                    int ySelect = sc.nextInt();
-                    */
-                    selec = seleccionarPieza(black, par.X , par.Y); 
-                }while(selec == null);
-                System.out.println("La pieza seleccionada es " + selec);
-                System.out.println("Los movimiento son");
-                //
-                ArrayList<Pair> mov = selec.getPieza().getMovimientos(tabla);
-                for(Pair parsito: mov){
-                    System.out.println(parsito.X + ", " + parsito.Y);
-                }                
-                tab.paintMovements(mov);
-
-                boolean mover = false;
-                do{
-                    JOptionPane.showMessageDialog(null, "Seleccione una posicion!");
-                    Pair par = tab.seleccionarElemento();
-                    mover = this.mover(selec, par.X, par.Y, mov);
-                 
-                }while(!mover);
-                System.out.println("Se movio");
             }
+    
             tab.reload();
-
             tabla.imprimirTabla();
             turno++;
-        }while(end);
+        } while (end);
         tab.dispose();
     }
+    
     
     public Casilla seleccionarPieza(Player p, int x, int y){ //jugador
 

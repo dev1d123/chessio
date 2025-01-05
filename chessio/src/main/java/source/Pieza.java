@@ -22,6 +22,7 @@ public class Pieza{
     protected String imgPath1;
     protected String imgPath2;
 
+    protected ArrayList<String> movimientos;
 
     private int x;
     private int y;

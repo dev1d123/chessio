@@ -53,6 +53,15 @@ public class TableroGUI extends JFrame {
     }
 
     public void paintMovements(ArrayList<Pair> mov) {
+        for (int i = 0; i < 64; i++) {
+            if ((i % 8 + i / 8) % 2 == 0) {
+                buttons[i % 8][i/8].setBackground(Color.WHITE);
+            } else {
+                buttons[i % 8][i/8].setBackground(Color.GRAY);
+            }
+        }
+
+
         for (Pair p : mov) {
             if (juego.getTablero().tabla[p.getX()][p.getY()].tienePieza()) {
                 buttons[p.getY()][p.getX()].setBackground(Color.RED);
