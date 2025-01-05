@@ -4,6 +4,7 @@
  */
 package source;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,7 +20,6 @@ import interfazGrafica.TableroGUI;
 public class Juego {
     private Tablero tabla;
     private int turno;
-    
     private Player j1;
     private Player j2;
     //Clase jugador
@@ -81,7 +81,22 @@ public class Juego {
         boolean end = true;
     
         do {
+
             Player currentPlayer = (turno % 2 == 0) ? white : black;
+            /* 
+            if(turno%2 == 0){
+                if(hayJaque(white, black, tab)){
+                    JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+
+                }
+
+            }else{
+                if(hayJaque(black, white, tab)){
+                    JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                }
+
+            }
+            */
             System.out.println("Turno del jugador " + (currentPlayer.isWhite() ? "blancas" : "negras"));
     
             Casilla selectedPiece = null;
@@ -118,19 +133,22 @@ public class Juego {
 
                     if (moved) {
                         System.out.println("Pieza movida.");
+                        /* 
                         if(turno%2 == 0){
-                            if(hayJaque(white, black)){
+                            if(hayJaque(white, black, tab)){
+                                JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
 
                             }
                             //turno de white
                         }else{
                             //turno de black.
-                            if(hayJaque(black, white)){
-                                
+                            if(hayJaque(black, white, tab)){
+                                JOptionPane.showMessageDialog(null,"Hay un jaque","Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
                         }
-
+                        */
                         break;
+                        
                     }
                 }
             }
@@ -142,7 +160,7 @@ public class Juego {
         tab.dispose();
     }
     
-    public boolean hayJaque(Player p1, Player p2){
+    public boolean hayJaque(Player p1, Player p2, TableroGUI tab){
         //comprobar si hay jaque de p1 a p2
         //obtener la posicion del rey!
         int reyX = -1;
@@ -152,18 +170,33 @@ public class Juego {
                 Casilla casilla = tabla.tabla[i][j];
                 if(casilla.tienePieza() == false) continue;
                 if(casilla.getPieza() instanceof Rey && casilla.getPieza().getPlayer() == p2){
-                    JOptionPane.showMessageDialog(null, "Hay un rey en " + casilla.getX() + " " + casilla.getY(), "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                     reyX = casilla.getX();
                     reyY = casilla.getY();
                 }
             }
         }
-
         //obtener todas las coordenadas de ataque de p1!!!
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                Casilla casilla = tabla.tabla[i][j];
+                if(casilla.tienePieza() == false) continue;
+                if(casilla.getPieza().getPlayer() == p1){
+                    ArrayList<Pair> mov = casilla.getPieza().getMovimientos(tabla);
+                    for(Pair p: mov){
+                        if(reyX == p.X && reyY == p.Y){
+                            tab.paintSquare(reyX, reyY, Color.BLUE);
+                            return true;
+
+                        }
+                    }
+                }
+            }
+        }
         
 
 
-        return true;
+
+        return false;
     }
 
 
