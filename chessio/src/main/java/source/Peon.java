@@ -25,7 +25,7 @@ public class Peon extends Pieza implements PiezaInterfaz{
     }
 
     @Override
-    public ArrayList<Pair> getMovimientos(Tablero t) {
+    public ArrayList<Pair> getMovimientos(Tablero t, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2) {
         determinarSiEsPrimerizo(); //Se determina si el peón esta dando su primer movimiento o no
         ArrayList<Pair> res = new ArrayList<>();
         int[][] movimientos = {
@@ -43,30 +43,41 @@ public class Peon extends Pieza implements PiezaInterfaz{
         //k = 1, el bucle recorrerá movimientos factibles para peón de abajo
         int k = (p.getPosicion()) ? 0 : 1; 
         for (int i = k; i < movimientos.length; i += 2) {
-                int newX = this.getX() + movimientos[i][0];
-                int newY = this.getY() + movimientos[i][1];
-                
-                if(!posValida(newX, newY)){
-                    continue;
-                }
+            int newX = this.getX() + movimientos[i][0];
+            int newY = this.getY() + movimientos[i][1];
+            
+            if(!posValida(newX, newY)){
+                continue;
+            }
 
-                Casilla cas = t.tabla[newX][newY];  
-                //System.out.println(newX + "" + newY);
-                //System.out.println("Se pregunta tiene pieza?: " + cas.tienePieza());
-                if (!cas.tienePieza()) { //No hay una pieza en la nueva posición
-                    if (i < 2) { 
-                        res.add(new Pair(newX, newY)); //Se añade el salto de 1
-                    }
-                    if (i >=2 && i <= 3 && this.esPrimerizo() && res.size() == 1) { //Se verifica si es factible dar salto de 2
-                        res.add(new Pair(newX, newY)); //res de tamaño 1 indica que antes se pudo dar salto de 1, por tanto ahora se puede dar salto de 2
-                    } 
+            Casilla cas = t.tabla[newX][newY];  
+            //System.out.println(newX + "" + newY);
+            //System.out.println("Se pregunta tiene pieza?: " + cas.tienePieza());
+            if (!cas.tienePieza()) { //No hay una pieza en la nueva posición
+                if (i < 2) { 
+                    res.add(new Pair(newX, newY)); //Se añade el salto de 1
                 }
-                
-                if (cas.tienePieza()) { //Hay una piza en la nueva posición
-                    if (i >= 4 && cas.getPieza().getPlayer() != p) { //Condiciones válidas para captura en diagonal
-                        res.add(new Pair(newX, newY));
-                    }
+                if (i >=2 && i <= 3 && this.esPrimerizo() && res.size() == 1) { //Se verifica si es factible dar salto de 2
+                    res.add(new Pair(newX, newY)); //res de tamaño 1 indica que antes se pudo dar salto de 1, por tanto ahora se puede dar salto de 2
                 } 
+            }
+            if (cas.tienePieza() && i >= 4 && cas.getPieza().getPlayer() != p) {
+                res.add(new Pair(newX, newY));
+            }
+        }
+        // Captura al paso
+        if (!movJ2.isEmpty()) {
+            Movimiento lastMove = movJ2.get(movJ2.size() - 1);
+            if (lastMove.getPieza().equals("Peon") && Math.abs(lastMove.getInicioFila() - lastMove.getFinFila()) == 2) {
+                int enemigoFila = lastMove.getFinFila();
+                int enemigoColumna = lastMove.getFinColumna();
+                if (this.getX() == enemigoFila && Math.abs(this.getY() - enemigoColumna) == 1) {
+                    int capturaX = p.getPosicion() ? enemigoFila + 1 : enemigoFila - 1;
+                    if (posValida(capturaX, enemigoColumna)) {
+                        res.add(new Pair(capturaX, enemigoColumna));
+                    }
+                }
+            }
         }
         
         

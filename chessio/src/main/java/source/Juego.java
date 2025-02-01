@@ -22,6 +22,8 @@ public class Juego {
     private int turno;
     private Player j1;
     private Player j2;
+    ArrayList<Movimiento> movJ1 = new ArrayList<Movimiento>();
+    ArrayList<Movimiento> movJ2 = new ArrayList<Movimiento>();
     //Clase jugador
 
     //paths -> texturas....
@@ -101,7 +103,7 @@ public class Juego {
     
             Casilla selectedPiece = null;
             ArrayList<Pair> availableMoves = new ArrayList<>();
-    
+            Pair initialPos = new Pair();
             while (true) {
                 if (selectedPiece == null) {
                     //JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
@@ -110,15 +112,23 @@ public class Juego {
                     boolean tra = hayJaque(j2, j1, tab, tabla);
                     Pair selection = tab.seleccionarElemento();
                     selectedPiece = seleccionarPieza(currentPlayer, selection.X, selection.Y);
-    
+
                     if (selectedPiece != null) {
+                        initialPos.X = selection.X;
+                        initialPos.Y = selection.Y;
                         System.out.println("La pieza seleccionada es " + selectedPiece);
-                        availableMoves = selectedPiece.getPieza().getMovimientos(tabla);
+                        if(currentPlayer == j1){
+                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
+                        }else{
+                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
+                        }
+
+                        
                         tab.paintMovements(availableMoves);
                         boolean useless1 = hayJaque(j1, j2, tab, tabla);
                         boolean useless2 = hayJaque(j2, j1, tab, tabla);
                         for (Pair move : availableMoves) {
-                            System.out.println("Movimiento posible: " + move.X + ", " + move.Y);
+                            //System.out.println("Movimiento posible: " + move.X + ", " + move.Y);
                         }
                     }
                 } else {
@@ -126,23 +136,42 @@ public class Juego {
                     boolean asd = hayJaque(j1, j2, tab, tabla);
                     boolean tra = hayJaque(j2, j1, tab, tabla);
                     Pair selection = tab.seleccionarElemento();
-    
+
                     Casilla newSelection = seleccionarPieza(currentPlayer, selection.X, selection.Y);
                     if (newSelection != null && newSelection != selectedPiece) {
                         selectedPiece = newSelection;
-                        availableMoves = selectedPiece.getPieza().getMovimientos(tabla);
+
+                        if(currentPlayer == j1){
+                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
+                        }else{
+                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
+                        }
+
                         tab.paintMovements(availableMoves);
+                        
                         boolean useless1 = hayJaque(j1, j2, tab, tabla);
                         boolean useless2 = hayJaque(j2, j1, tab, tabla);
 
                         System.out.println("Nueva pieza seleccionada: " + selectedPiece);
                         continue;
                     }
-    
+                    Pieza piezaMov = selectedPiece.getPieza();
                     boolean moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla);
 
                     if (moved) {
-                        System.out.println("Pieza movida.");
+                        System.out.println("$$$$$$$$$$$$$$Pieza movida -> " + piezaMov.obtenerNombreClase());
+                        System.err.println("Posicion inicial -> (" + initialPos.X + ", " + initialPos.Y + ")");
+                        System.err.println("Posicion final -> (" + selection.X + ", " + selection.Y + ")");
+
+                        Movimiento m = new Movimiento(piezaMov.obtenerNombreClase(), initialPos.X, initialPos.Y, selection.X, selection.Y);
+                        if(currentPlayer == j1){
+                            movJ1.add(m);
+                        }else{
+                            movJ2.add(m);
+                        }
+                        
+
+
                         if(turno%2 == 0){
                             if(hayJaque(white, black, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
@@ -178,11 +207,11 @@ public class Juego {
     }
     
     public boolean hayJaque(Player p1, Player p2, TableroGUI tab, Tablero esteTablero){
-        System.out.println("p1: " + p1);
-        System.out.println("p2: " + p2);
+        //System.out.println("p1: " + p1);
+        //System.out.println("p2: " + p2);
 
-        System.out.println("ptab1: " + esteTablero.p1);
-        System.out.println("ptab2: " + esteTablero.p2);
+        //System.out.println("ptab1: " + esteTablero.p1);
+        //System.out.println("ptab2: " + esteTablero.p2);
         //comprobar si hay jaque de p1 a p2
         //obtener la posicion del rey!
         int reyX = -1;
@@ -191,24 +220,34 @@ public class Juego {
             for(int j = 0; j < 8; j++){
                 Casilla casilla = esteTablero.tabla[i][j];
                 if(casilla.tienePieza() == false) continue;
+                /*
                 System.out.println("Imprimiendo: " + casilla.toString() + " -> " + (casilla.getPieza() instanceof Pieza));
                 System.out.println("Imprimiendo xd: " + casilla.getPieza().getClass().getName());
 
                 System.out.println("Imprimiendo dueño: " + casilla.getPieza().getPlayer());
+                */
                 if(casilla.getPieza() instanceof Rey && casilla.getPieza().getPlayer() == p2){
                     reyX = casilla.getX();
                     reyY = casilla.getY();
                 }
             }
         }
-        System.out.println("REY pos: " + reyX + ", " + reyY);
+        //System.out.println("REY pos: " + reyX + ", " + reyY);
         //obtener todas las coordenadas de ataque de p1!!!
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                 Casilla casilla = esteTablero.tabla[i][j];
                 if(casilla.tienePieza() == false) continue;
                 if(casilla.getPieza().getPlayer() == p1){
-                    ArrayList<Pair> mov = casilla.getPieza().getMovimientos(esteTablero);
+                    //de p1 a p2
+                    ArrayList<Pair> mov;
+                    if(p1 == j1){
+                        mov = casilla.getPieza().getMovimientos(esteTablero, movJ1, movJ2);
+                    }else{
+                        mov = casilla.getPieza().getMovimientos(esteTablero, movJ2, movJ1);
+                    }
+                    
+                    
                     for(Pair p: mov){
                         if(reyX == p.X && reyY == p.Y){
                             if(tab != null){
@@ -226,12 +265,12 @@ public class Juego {
     }
 
     public boolean hayJaqueMate(Player p1, Player p2, TableroGUI tab, Tablero originalTab, int turno) {
-        System.out.println("TESTEANDO MATE");
+        //System.out.println("TESTEANDO MATE");
         
         if (!hayJaque(p1, p2, tab, originalTab)) {
             return false;
         }
-        System.out.println("paso1");
+        //System.out.println("paso1");
     
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -242,8 +281,13 @@ public class Juego {
                 Pieza pieza = casilla.getPieza();
     
                 if (pieza.getPlayer() != p2) continue;
-    
-                ArrayList<Pair> movimientosDisponibles = pieza.getMovimientos(tabla);
+                
+                ArrayList<Pair> movimientosDisponibles;
+                if(p1 == j1){
+                    movimientosDisponibles = pieza.getMovimientos(tabla, movJ1, movJ2);
+                }else{
+                    movimientosDisponibles = pieza.getMovimientos(tabla, movJ2, movJ1);
+                }
     
                 for (Pair mov : movimientosDisponibles) {
                     Tablero copiaTablero = new Tablero(this.tabla);
@@ -253,15 +297,15 @@ public class Juego {
 
                     boolean movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero);
                     
-                    System.out.println("SIMULAR MOVIMIENTO!!!");
+                    //System.out.println("SIMULAR MOVIMIENTO!!!");
                     copiaTablero.imprimirTabla();
                     
                     if (!hayJaque(p1, p2, null, copiaTablero)) {
 
-                        System.out.println("ya no hay jaque bro");
+                        //System.out.println("ya no hay jaque bro");
                         return false; 
                     }else{
-                        System.out.println("sigue habiendo jaque!");
+                        //System.out.println("sigue habiendo jaque!");
                     }
 
 
@@ -322,6 +366,8 @@ public class Juego {
         Pieza mover = pieza.getPieza();
         
         Player jugador = mover.getPlayer();
+
+
         Casilla objetivo = tab.tabla[x][y];
 
         if(tab.tabla[x][y].tienePieza()){
@@ -381,11 +427,3 @@ public class Juego {
         }
     }
 }
-/*
-DRY -> Do not repeat yourself
-KISS -> Keep it short and simple 
-*/
-
-//JFrame -> constructor -> tamaño, titulo, setVisible(), createContens....
-
-//Programacion con hilos -> animaciones (fotogramas)

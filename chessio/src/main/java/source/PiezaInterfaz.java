@@ -18,5 +18,5 @@ ArrayList<Pair> arr = new ArrayList<>();
 
 
 public interface PiezaInterfaz {
-   ArrayList<Pair> getMovimientos(Tablero tabla);
+   ArrayList<Pair> getMovimientos(Tablero tabla, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2);
 }

@@ -12,6 +12,7 @@ public class Pair {
     int X;
     int Y;
 
+    public Pair(){}
     public Pair(int x, int y) {
         X = x;
         Y = y;

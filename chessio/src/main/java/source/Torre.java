@@ -23,7 +23,7 @@ public class Torre extends Pieza implements PiezaInterfaz{
     }
 
     @Override
-    public ArrayList<Pair> getMovimientos(Tablero tabla) {
+    public ArrayList<Pair> getMovimientos(Tablero tabla, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2) {
         ArrayList<Pair> res = new ArrayList<>();
         Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), 1, 0, this.getPlayer());  // Derecha
         Juego.agregarMovimientos(tabla, res, this.getX(), this.getY(), -1, 0, this.getPlayer()); // Izquierda
@@ -32,8 +32,8 @@ public class Torre extends Pieza implements PiezaInterfaz{
 
         return res;
     }
-    public String getM(Tablero tabla){
-        ArrayList<Pair> res = getMovimientos(tabla);
+    public String getM(Tablero tabla, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2){
+        ArrayList<Pair> res = getMovimientos(tabla, movJ1, movJ2);
         String ans = "";
         for(Pair p: res){
             ans+= "("+p.X+", "+p.Y+")\n";

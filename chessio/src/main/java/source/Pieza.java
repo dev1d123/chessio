@@ -26,7 +26,8 @@ public class Pieza{
 
     private int x;
     private int y;
-    
+
+
     //new Pieza('-');
     
     public Pieza(char signo){
@@ -84,7 +85,7 @@ public class Pieza{
         this.player = player;
     }
     
-    public ArrayList<Pair> getMovimientos(Tablero tabla) {
+    public ArrayList<Pair> getMovimientos(Tablero tabla, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2) {
         return null;
     }
     public Pieza(Pieza otra) {
@@ -100,6 +101,9 @@ public class Pieza{
     
         this.x = otra.x;
         this.y = otra.y;
+    }
+    public String obtenerNombreClase() {
+        return this.getClass().getSimpleName(); 
     }
     
 }
