@@ -222,6 +222,7 @@ public class Juego {
         //System.out.println("ptab2: " + esteTablero.p2);
         //comprobar si hay jaque de p1 a p2
         //obtener la posicion del rey!
+        Rey rey = null;
         int reyX = -1;
         int reyY = -1;
         for(int i = 0; i < 8; i++){
@@ -235,6 +236,7 @@ public class Juego {
                 System.out.println("Imprimiendo dueño: " + casilla.getPieza().getPlayer());
                 */
                 if(casilla.getPieza() instanceof Rey && casilla.getPieza().getPlayer() == p2){
+                    rey = (Rey)casilla.getPieza();
                     reyX = casilla.getX();
                     reyY = casilla.getY();
                 }
@@ -262,6 +264,7 @@ public class Juego {
                                 tab.paintSquare(reyX, reyY, Color.BLUE);
 
                             }
+                            rey.jaque = true;
                             return true;
 
                         }
@@ -269,6 +272,7 @@ public class Juego {
                 }
             }
         }
+        rey.jaque = false;
         return false;
     }
 
@@ -473,17 +477,17 @@ public class Juego {
         }
     }
     public static boolean amenazaCasilla(Player p1, Player p2, Tablero esteTablero, int x, int y, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2) {
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
                 Casilla casilla = esteTablero.tabla[i][j];
-                if (!casilla.tienePieza()) continue;
-                
-                if (casilla.getPieza().getPlayer() == p1) {
-                    ArrayList<Pair> movimientos = casilla.getPieza().getMovimientos(esteTablero, movJ1, movJ2);
+                if(casilla.tienePieza() == false) continue;
+                if(casilla.getPieza().getPlayer() == p1){
+                    //de p1 a p2
+                    ArrayList<Pair> mov = casilla.getPieza().getMovimientos(esteTablero, movJ1, movJ2);
+            
                     
-                    for (Pair movimiento : movimientos) {
-                        if (movimiento.X == x && movimiento.Y == y) {
+                    for(Pair p: mov){
+                        if(x == p.X && y == p.Y){
                             return true;
                         }
                     }

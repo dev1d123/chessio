@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import interfazGrafica.TexturesPath;
 
 public class Rey extends Pieza implements PiezaInterfaz {
-    
+
+    public boolean jaque = false;
+
     public Rey(int x, int y, Player player, int textureID) {
         super(x, y, 'R', player, textureID);
         imgPath1 = TexturesPath.getPath(false, textureID, 5);
@@ -42,8 +44,13 @@ public class Rey extends Pieza implements PiezaInterfaz {
             j2 = tabla.p2;
         }
 
-        if (puedeHacerEnroque(movJ1)) {
-            //
+        if (puedeHacerEnroque(movJ1) && !this.jaque) {
+            /*
+            if(Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY(), movJ2, movJ1)){
+                
+                //return res;
+            }
+            */
             if (puedeEnrocarCorto(tabla, movJ1)) {
                 if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 1, movJ2, movJ1) &&
                     !Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 2, movJ2, movJ1)) {
@@ -63,6 +70,7 @@ public class Rey extends Pieza implements PiezaInterfaz {
 
 
     private boolean puedeHacerEnroque(ArrayList<Movimiento> movJ1){
+        //si la casilla esta amenazada
         //si nunca aparece torre!
         for(Movimiento mov: movJ1){
             if(mov.getPieza().equals("Rey")) return false;
