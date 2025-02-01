@@ -118,14 +118,16 @@ public class Juego {
                         initialPos.X = selection.X;
                         initialPos.Y = selection.Y;
                         System.out.println("La pieza seleccionada es " + selectedPiece);
+                        
                         if(currentPlayer == j1){
                             availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
                         }else{
                             availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
                         }
 
-                        
                         tab.paintMovements(availableMoves);
+
+                        
                         boolean useless1 = hayJaque(j1, j2, tab, tabla);
                         boolean useless2 = hayJaque(j2, j1, tab, tabla);
                         for (Pair move : availableMoves) {
@@ -364,7 +366,7 @@ public class Juego {
         }
 
         if(pieza.getX() == x && pieza.getY() == y){
-            System.out.println("No puedes seleccionar la misma casilla");
+            System.out.println("No puedes seleccionar la misma casilla GAAA");
             return false;
         }
 
@@ -389,6 +391,26 @@ public class Juego {
                 int enemigoColumna = lastMove.getFinColumna();
                 if (pieza.getX() == enemigoFila && Math.abs(pieza.getY() - enemigoColumna) == 1 && x == (jugador.getPosicion() ? enemigoFila + 1 : enemigoFila - 1)) {
                     tab.tabla[enemigoFila][enemigoColumna].quitarPieza();
+                }
+            }
+        }
+        //Enroque, todas las contidiciones ya estan validadas, solo verificar si el rey se ha movido a una casilla de posible enroque....e intercambiar
+        if (pieza.getPieza().obtenerNombreClase().equals("Rey")) {
+            if (Math.abs(pieza.getY() - y) == 2) { // Enroque detectado
+                int torreColumna = (y > pieza.getY()) ? 7 : 0; // Determina si es enroque corto o largo
+                int nuevaTorreColumna = (y > pieza.getY()) ? y - 1 : y + 1; 
+                Casilla torreCasilla = tab.tabla[pieza.getX()][torreColumna];
+                
+                if (torreCasilla.tienePieza() && torreCasilla.getPieza().obtenerNombreClase().equals("Torre")) {
+                    Pieza torre = torreCasilla.getPieza();
+                    Casilla nuevaTorreCasilla = tab.tabla[pieza.getX()][nuevaTorreColumna];
+                    
+                    // Mover la torre
+                    torreCasilla.quitarPieza();
+                    torreCasilla.setPieza(new Pieza('-'));
+                    nuevaTorreCasilla.setPieza(torre);
+                    torre.setX(pieza.getX());
+                    torre.setY(nuevaTorreColumna);
                 }
             }
         }
@@ -450,4 +472,25 @@ public class Juego {
             }
         }
     }
+    public static boolean amenazaCasilla(Player p1, Player p2, Tablero esteTablero, int x, int y, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2) {
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Casilla casilla = esteTablero.tabla[i][j];
+                if (!casilla.tienePieza()) continue;
+                
+                if (casilla.getPieza().getPlayer() == p1) {
+                    ArrayList<Pair> movimientos = casilla.getPieza().getMovimientos(esteTablero, movJ1, movJ2);
+                    
+                    for (Pair movimiento : movimientos) {
+                        if (movimiento.X == x && movimiento.Y == y) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }

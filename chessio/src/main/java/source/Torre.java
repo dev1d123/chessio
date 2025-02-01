@@ -13,7 +13,7 @@ import interfazGrafica.TexturesPath;
  * @author Windows
  */
 public class Torre extends Pieza implements PiezaInterfaz{
-    
+
     //Inicia el juego y cuando se corona
     //x, y, signo
     public Torre(int x, int y, Player player, int textureID) {
@@ -40,6 +40,7 @@ public class Torre extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
+
 
     
     
