@@ -5,6 +5,7 @@
 package source;
 
 import java.awt.Color;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -156,7 +157,12 @@ public class Juego {
                         continue;
                     }
                     Pieza piezaMov = selectedPiece.getPieza();
-                    boolean moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla);
+                    boolean moved;
+                    if(currentPlayer == j1){
+                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ1, movJ2);
+                    }else{
+                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ2, movJ2 );
+                    }
 
                     if (moved) {
                         System.out.println("$$$$$$$$$$$$$$Pieza movida -> " + piezaMov.obtenerNombreClase());
@@ -293,9 +299,14 @@ public class Juego {
                     Tablero copiaTablero = new Tablero(this.tabla);
     
                     Casilla copiaCasillaPieza = copiaTablero.tabla[casilla.getX()][casilla.getY()];
-                    
+                    boolean movimientoExitoso;
+                    if(p1 == j1){
+                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ1, movJ2);
+                    }else{
+                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ2, movJ1);
+                    }
 
-                    boolean movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero);
+                    
                     
                     //System.out.println("SIMULAR MOVIMIENTO!!!");
                     copiaTablero.imprimirTabla();
@@ -346,7 +357,7 @@ public class Juego {
     }
     
     
-    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles, Tablero tab){ 
+    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles, Tablero tab, ArrayList<Movimiento> m1, ArrayList<Movimiento> m2){ 
         if(x>=8 || x < 0 || y>=8 || y < 0 ){
             System.out.println("Limites excedidos");
             return false;
@@ -369,6 +380,19 @@ public class Juego {
 
 
         Casilla objetivo = tab.tabla[x][y];
+
+        //captura al paso
+        if(!movJ2.isEmpty()){
+            Movimiento lastMove = movJ2.get(movJ2.size() - 1);
+            if(lastMove.getPieza().equals("Peon") && Math.abs(lastMove.getInicioFila() - lastMove.getFinFila()) == 2){
+                int enemigoFila = lastMove.getFinFila();
+                int enemigoColumna = lastMove.getFinColumna();
+                if (pieza.getX() == enemigoFila && Math.abs(pieza.getY() - enemigoColumna) == 1 && x == (jugador.getPosicion() ? enemigoFila + 1 : enemigoFila - 1)) {
+                    tab.tabla[enemigoFila][enemigoColumna].quitarPieza();
+                }
+            }
+        }
+
 
         if(tab.tabla[x][y].tienePieza()){
             if(tab.tabla[x][y].getPieza().getPlayer() == jugador){
