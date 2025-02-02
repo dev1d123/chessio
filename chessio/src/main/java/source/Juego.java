@@ -386,11 +386,20 @@ public class Juego {
 
 
         Casilla objetivo = tab.tabla[x][y];
-
+        
+        ArrayList<Movimiento> movimientosOponente;
+        if(jugador == j1){
+            movimientosOponente = movJ2;
+        }else{
+            movimientosOponente = movJ1;
+        }
         //captura al paso
-        if(!movJ2.isEmpty()){
-            Movimiento lastMove = movJ2.get(movJ2.size() - 1);
+        
+        if (!movimientosOponente.isEmpty()) {
+
+            Movimiento lastMove = movimientosOponente.get(movimientosOponente.size() - 1);
             if(lastMove.getPieza().equals("Peon") && Math.abs(lastMove.getInicioFila() - lastMove.getFinFila()) == 2){
+
                 int enemigoFila = lastMove.getFinFila();
                 int enemigoColumna = lastMove.getFinColumna();
                 if (pieza.getX() == enemigoFila && Math.abs(pieza.getY() - enemigoColumna) == 1 && x == (jugador.getPosicion() ? enemigoFila + 1 : enemigoFila - 1)) {
@@ -398,6 +407,9 @@ public class Juego {
                 }
             }
         }
+        
+
+        
         //Enroque, todas las contidiciones ya estan validadas, solo verificar si el rey se ha movido a una casilla de posible enroque....e intercambiar
         if (pieza.getPieza().obtenerNombreClase().equals("Rey")) {
             if (Math.abs(pieza.getY() - y) == 2) { // Enroque detectado
