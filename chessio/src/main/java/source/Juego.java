@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
+import interfazGrafica.PromocionDialog;
 import interfazGrafica.TableroGUI;
 
 /**
@@ -25,12 +26,14 @@ public class Juego {
     private Player j2;
     ArrayList<Movimiento> movJ1 = new ArrayList<Movimiento>();
     ArrayList<Movimiento> movJ2 = new ArrayList<Movimiento>();
+    private int text;
     //Clase jugador
 
     //paths -> texturas....
 
 
     public Juego(int t){ //La posición puede ser una constante (final)
+        this.text = t;
         j1 = new Player("Julio", false, false); //negras....abajo, jugador 1 siempre abajo -> posicion = false
         j2 = new Player("Julian", true, true); //blancas....arriba, jugador 2 siempre arriba -> posicion = true
         tabla = new Tablero(j1, j2);     
@@ -373,20 +376,50 @@ public class Juego {
             System.out.println("No puedes seleccionar la misma casilla GAAA");
             return false;
         }
-
         if(!validarMovimientoPieza(x, y, movimientosDisponibles)){
             System.out.println("Esa pieza no puede moverse ahi!!!");
             return false;
         }
 
-
         Pieza mover = pieza.getPieza();
-        
         Player jugador = mover.getPlayer();
-
-
         Casilla objetivo = tab.tabla[x][y];
         
+        if(mover.obtenerNombreClase().equals("Peon")){
+            int filaFinal = (jugador == j1) ? 0 : 7; 
+            if (x == filaFinal) {
+                System.out.println("¡Peón ha llegado a la fila de promoción!");
+
+                String[] opciones = {"Torre", "Caballo", "Alfil", "Dama"};
+                int opcion = JOptionPane.showOptionDialog(
+                    null, 
+                    "Selecciona la pieza para la promoción", 
+                    "Promoción de Peón",
+                    JOptionPane.DEFAULT_OPTION, 
+                    JOptionPane.QUESTION_MESSAGE, 
+                    null, 
+                    opciones, 
+                    opciones[3] // Selección por defecto: Dama
+                );
+
+                Pieza nuevaPieza;
+                switch (opcion) {
+                    case 0 -> nuevaPieza = new Torre(x, y, jugador, text);
+                    case 1 -> nuevaPieza = new Caballo(x, y, jugador, text);
+                    case 2 -> nuevaPieza = new Alfil(x, y, jugador, text);
+                    default -> nuevaPieza = new Reina(x, y, jugador, text); 
+                }
+                pieza.setPieza(new Pieza('-'));
+                pieza.quitarPieza();
+                objetivo.setPieza(nuevaPieza);
+                System.out.println("Peón promovido a " + nuevaPieza.obtenerNombreClase());
+
+
+                return true;
+            }
+        }
+
+
         ArrayList<Movimiento> movimientosOponente;
         if(jugador == j1){
             movimientosOponente = movJ2;

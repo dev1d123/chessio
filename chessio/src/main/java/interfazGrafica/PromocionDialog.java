@@ -22,17 +22,16 @@ public class PromocionDialog extends JDialog {
     public PromocionDialog(Frame parent) {
         super(parent, "Selecciona una pieza para la promoción", true);
         setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(new Color(240, 240, 240)); // Fondo suave
+        getContentPane().setBackground(new Color(240, 240, 240)); 
 
-        // Mensaje superior
+        
         JLabel mensaje = new JLabel("Elige una pieza para promocionar", SwingConstants.CENTER);
         mensaje.setFont(new Font("Arial", Font.BOLD, 18));
         
         add(mensaje, BorderLayout.NORTH);
 
-        // Panel de botones
+        
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
-        // Agregar botones estilizados
         panelBotones.add(crearBoton("Torre", 1));
         panelBotones.add(crearBoton("Caballo", 2));
         panelBotones.add(crearBoton("Alfil", 3));
@@ -40,18 +39,17 @@ public class PromocionDialog extends JDialog {
 
         add(panelBotones, BorderLayout.CENTER);
 
-        // Configuración del diálogo
         setSize(450, 180);
         setLocationRelativeTo(parent);
         
-        getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2)); // Borde elegante
+        getRootPane().setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2)); 
     }
 
     private JButton crearBoton(String nombre, int opcion) {
         JButton boton = new JButton(nombre);
         boton.setFont(new Font("Arial", Font.BOLD, 14));
-        boton.setBackground(new Color(50, 50, 50)); // Fondo oscuro
-        boton.setForeground(Color.WHITE); // Texto blanco
+        boton.setBackground(new Color(50, 50, 50)); 
+        boton.setForeground(Color.WHITE); 
         boton.setFocusPainted(false);
         boton.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.BLACK, 1), 
@@ -64,7 +62,7 @@ public class PromocionDialog extends JDialog {
 
     private void seleccionarPieza(int opcion) {
         opcionSeleccionada = opcion;
-        dispose(); // Cierra la ventana
+        dispose();
     }
 
     public int getOpcionSeleccionada() {
@@ -75,4 +73,5 @@ public class PromocionDialog extends JDialog {
         PromocionDialog dialog = new PromocionDialog(parent);
         dialog.setVisible(true);
         return dialog.getOpcionSeleccionada();
+    }
 }
