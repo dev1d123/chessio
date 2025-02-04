@@ -187,10 +187,23 @@ public class Juego {
                             if(hayJaque(white, black, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
+                            if(hayTablas(white, black, tab, tabla)){
+                                JOptionPane.showMessageDialog(null, "Hay tablas, empate", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                            if(hayJaqueMate(white, black, tab, tabla, turno)){
+                                JOptionPane.showMessageDialog(null, "Hay un jaque mate!!!", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+
+                            }
                         }else{
                             //turno de black.
                             if(hayJaque(black, white, tab, tabla)){
                                 JOptionPane.showMessageDialog(null,"Hay un jaque","Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                            if(hayTablas(black, white, tab, tabla)){
+                                JOptionPane.showMessageDialog(null, "Hay tablas, empate", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                            if(hayJaqueMate(black, white, tab, tabla, turno)){
+                                JOptionPane.showMessageDialog(null, "Hay un jaque mate!!!", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
                         }
                         
@@ -267,7 +280,7 @@ public class Juego {
     
 
     public boolean hayJaqueMate(Player p1, Player p2, TableroGUI tab, Tablero originalTab, int turno) {
-        //System.out.println("TESTEANDO MATE");
+        System.out.println("TESTEANDO MATE");
         
         if (!hayJaque(p1, p2, tab, originalTab)) {
             return false;
@@ -304,15 +317,15 @@ public class Juego {
 
                     
                     
-                    //System.out.println("SIMULAR MOVIMIENTO!!!");
+                    System.out.println("SIMULAR MOVIMIENTO!!!");
                     copiaTablero.imprimirTabla();
                     
                     if (!hayJaque(p1, p2, null, copiaTablero)) {
 
-                        //System.out.println("ya no hay jaque bro");
+                        System.out.println("ya no hay jaque bro");
                         return false; 
                     }else{
-                        //System.out.println("sigue habiendo jaque!");
+                        System.out.println("sigue habiendo jaque!");
                     }
 
 
@@ -591,7 +604,7 @@ public class Juego {
 
         // Verificar si el rey queda en jaque tras el movimiento
         boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
-        JOptionPane.showMessageDialog(null, "Luego del movimento sigues en jaque? -> " + sigueJaque);
+        //JOptionPane.showMessageDialog(null, "Luego del movimento sigues en jaque? -> " + sigueJaque);
         if (sigueJaque) {
             System.out.println("Movimiento inválido: tu rey quedaría en jaque.");
             return false;
