@@ -16,6 +16,11 @@ public class Torre extends Pieza implements PiezaInterfaz{
 
     //Inicia el juego y cuando se corona
     //x, y, signo
+    public Torre(Torre otro) {
+        super(otro.getX(), otro.getY(), otro.getSigno(), otro.getPlayer(), otro.textureID);
+        this.imgPath1 = otro.imgPath1;
+        this.imgPath2 = otro.imgPath2;
+    }
     public Torre(int x, int y, Player player, int textureID) {
         super(x, y, 'T', player, textureID);
         imgPath1 = TexturesPath.getPath(false, textureID, 1);
@@ -40,7 +45,9 @@ public class Torre extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-
+    public Torre clonar() {
+        return new Torre(this);
+    }
 
     
     

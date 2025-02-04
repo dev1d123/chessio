@@ -128,7 +128,7 @@ public class Juego {
                             availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
                         }
 
-                        tab.paintMovements(availableMoves);
+                        tab.paintMovements(availableMoves, tabla);
 
                         
                         //boolean useless1 = hayJaque(j1, j2, tab, tabla);
@@ -153,7 +153,7 @@ public class Juego {
                             availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
                         }
 
-                        tab.paintMovements(availableMoves);
+                        tab.paintMovements(availableMoves, tabla);
                         /*
                         boolean useless1 = hayJaque(j1, j2, tab, tabla);
                         boolean useless2 = hayJaque(j2, j1, tab, tabla);
@@ -164,9 +164,9 @@ public class Juego {
                     Pieza piezaMov = selectedPiece.getPieza();
                     boolean moved;
                     if(currentPlayer == j1){
-                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ1, movJ2);
+                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ1, movJ2, tab);
                     }else{
-                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ2, movJ2 );
+                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ2, movJ2, tab);
                     }
 
                     if (moved) {
@@ -182,28 +182,18 @@ public class Juego {
                         }
                         
 
-                        /*
+                        
                         if(turno%2 == 0){
                             if(hayJaque(white, black, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
-                            
-                            if(hayJaqueMate(white, black, tab, tabla, turno)){
-                                JOptionPane.showMessageDialog(null, "Hay un jaque MATE", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            
                         }else{
                             //turno de black.
                             if(hayJaque(black, white, tab, tabla)){
                                 JOptionPane.showMessageDialog(null,"Hay un jaque","Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
-                             
-                            if(hayJaqueMate(black, white, tab, tabla, turno)){
-                                JOptionPane.showMessageDialog(null, "Hay un jaque MATE", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            
                         }
-                        */
+                        
                         break;
                         
                     }
@@ -259,17 +249,13 @@ public class Juego {
                     }else{
                         mov = casilla.getPieza().getMovimientos(esteTablero, movJ2, movJ1);
                     }
-                    
-                    
                     for(Pair p: mov){
                         if(reyX == p.X && reyY == p.Y){
                             if(tab != null){
                                 tab.paintSquare(reyX, reyY, Color.BLUE);
-
                             }
                             rey.jaque = true;
                             return true;
-
                         }
                     }
                 }
@@ -278,7 +264,7 @@ public class Juego {
         rey.jaque = false;
         return false;
     }
-   
+    
 
     public boolean hayJaqueMate(Player p1, Player p2, TableroGUI tab, Tablero originalTab, int turno) {
         //System.out.println("TESTEANDO MATE");
@@ -311,9 +297,9 @@ public class Juego {
                     Casilla copiaCasillaPieza = copiaTablero.tabla[casilla.getX()][casilla.getY()];
                     boolean movimientoExitoso;
                     if(p1 == j1){
-                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ1, movJ2);
+                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ1, movJ2, tab);
                     }else{
-                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ2, movJ1);
+                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ2, movJ1, tab);
                     }
 
                     
@@ -365,9 +351,8 @@ public class Juego {
         System.out.println("No hay una pieza");
         return null;
     }
-    
-    
-    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles, Tablero tab, ArrayList<Movimiento> m1, ArrayList<Movimiento> m2){ 
+
+    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles, Tablero tab, ArrayList<Movimiento> m1, ArrayList<Movimiento> m2, TableroGUI tabGUI){ 
         if(x>=8 || x < 0 || y>=8 || y < 0 ){
             System.out.println("Limites excedidos");
             return false;
@@ -410,6 +395,28 @@ public class Juego {
                     case 2 -> nuevaPieza = new Alfil(x, y, jugador, text);
                     default -> nuevaPieza = new Reina(x, y, jugador, text); 
                 }
+
+                /*movimiento*/
+                //crear una copia del tablero, luego, simular el movimiento!
+                Tablero copiaTablero = new Tablero(this.tabla);
+                Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+                Casilla objetivoDespues = copiaTablero.tabla[x][y];
+
+                antes.setPieza(new Pieza('-'));
+                antes.quitarPieza();
+                objetivoDespues.setPieza(nuevaPieza);
+
+                //comprobar que en copiaTablero, jugador no siga en jaque.
+                boolean sigueJaque;
+                if(jugador == j2){
+                    sigueJaque = hayJaque(j1, j2, tabGUI, copiaTablero);
+                }else{
+                    sigueJaque = hayJaque(j2, j1, tabGUI, copiaTablero);
+                }
+                if(sigueJaque){
+                    return false;
+                }
+
                 pieza.setPieza(new Pieza('-'));
                 pieza.quitarPieza();
                 objetivo.setPieza(nuevaPieza);
@@ -437,7 +444,41 @@ public class Juego {
                 int enemigoFila = lastMove.getFinFila();
                 int enemigoColumna = lastMove.getFinColumna();
                 if (pieza.getX() == enemigoFila && Math.abs(pieza.getY() - enemigoColumna) == 1 && x == (jugador.getPosicion() ? enemigoFila + 1 : enemigoFila - 1)) {
+                    
+                    //crear una copia del tablero, luego, simular el movimiento!
+                    Tablero copiaTablero = new Tablero(this.tabla);
+                    Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+                    Casilla objetivoDespues = copiaTablero.tabla[x][y];
+                    Casilla peonEliminado = copiaTablero.tabla[enemigoFila][enemigoColumna];
+                    
+                    Pieza moverCopia = copiaTablero.tabla[pieza.getX()][pieza.getY()].getPieza();
+
+                    antes.setPieza(new Pieza('-'));
+                    antes.quitarPieza();
+    
+                    objetivoDespues.setPieza(moverCopia);
+                    
+                    peonEliminado.setPieza(new Pieza('-'));
+                    peonEliminado.quitarPieza();
+                    //comprobar que en copiaTablero, jugador no siga en jaque.
+                    boolean sigueJaque;
+                    if(jugador == j2){
+                        sigueJaque = hayJaque(j1, j2, tabGUI, copiaTablero);
+                    }else{
+                        sigueJaque = hayJaque(j2, j1, tabGUI, copiaTablero);
+                    }
+                    if(sigueJaque){
+                        return false;
+                    }
+                
+
+                    pieza.setPieza(new Pieza('-'));
+                    pieza.quitarPieza();
+                    objetivo.setPieza(mover);            
+
+                    tab.tabla[enemigoFila][enemigoColumna].setPieza(new Pieza('-'));
                     tab.tabla[enemigoFila][enemigoColumna].quitarPieza();
+                    return true;
                 }
             }
         }
@@ -452,15 +493,50 @@ public class Juego {
                 Casilla torreCasilla = tab.tabla[pieza.getX()][torreColumna];
                 
                 if (torreCasilla.tienePieza() && torreCasilla.getPieza().obtenerNombreClase().equals("Torre")) {
+
+                    
                     Pieza torre = torreCasilla.getPieza();
                     Casilla nuevaTorreCasilla = tab.tabla[pieza.getX()][nuevaTorreColumna];
                     
-                    // Mover la torre
+                    // Crear una copia del tablero para simular el enroque
+                    Tablero copiaTablero = new Tablero(this.tabla);
+                    Casilla copiaReyCasilla = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+                    Casilla copiaReyDestino = copiaTablero.tabla[x][y];
+                    Casilla copiaTorreCasilla = copiaTablero.tabla[pieza.getX()][torreColumna];
+                    Casilla copiaNuevaTorreCasilla = copiaTablero.tabla[pieza.getX()][nuevaTorreColumna];
+
+                    Pieza reyCopia = copiaReyCasilla.getPieza();
+                    Pieza torreCopia = copiaTorreCasilla.getPieza();
+
+                    // Simular el movimiento en el tablero copiado
+                    copiaReyCasilla.setPieza(new Pieza('-'));
+                    copiaReyCasilla.quitarPieza();
+                    copiaReyDestino.setPieza(reyCopia);
+                    copiaTorreCasilla.setPieza(new Pieza('-'));
+                    copiaTorreCasilla.quitarPieza();
+                    copiaNuevaTorreCasilla.setPieza(torreCopia);
+
+                    // Verificar si el movimiento deja al rey en jaque
+                    boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
+
+                    if (sigueJaque) {
+                        return false; // Enroque inválido si el rey queda en jaque
+                    }
+
+                    // Movimiento de la torre
                     torreCasilla.quitarPieza();
                     torreCasilla.setPieza(new Pieza('-'));
                     nuevaTorreCasilla.setPieza(torre);
                     torre.setX(pieza.getX());
                     torre.setY(nuevaTorreColumna);
+                    
+                    
+                    //Movimiento del rey            
+                    pieza.setPieza(new Pieza('-'));
+                    pieza.quitarPieza();
+                    objetivo.setPieza(mover);
+                    
+                    return true;
                 }
             }
         }
@@ -471,14 +547,57 @@ public class Juego {
                 System.out.println("nunca vas a ver este mensaje");
                 return false;
             }else{
-                //comer
+                Tablero copiaTablero = new Tablero(this.tabla);
+                Casilla copiaOrigen = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+                Casilla copiaDestino = copiaTablero.tabla[x][y];
+
+                Pieza moverCopia = copiaOrigen.getPieza();
+
+                // Simular captura en el tablero copiado
+                copiaOrigen.setPieza(new Pieza('-'));
+                copiaOrigen.quitarPieza();
+                copiaDestino.setPieza(moverCopia);
+
+                // Comprobar si el movimiento deja al rey en jaque
+                boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
+
+                if (sigueJaque) {
+                    System.out.println("Movimiento inválido: tu rey quedaría en jaque.");
+                    return false;
+                }
+                //Comer!
                 objetivo.setPieza(new Pieza('-'));
                 objetivo.quitarPieza();                
+                
+                //Movimiento
+                pieza.setPieza(new Pieza('-'));
+                pieza.quitarPieza();
+                objetivo.setPieza(mover);
+                return true;
+
             }
         }
         //clavada, jaque
-       
+        Tablero copiaTablero = new Tablero(this.tabla);
+        Casilla copiaOrigen = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+        Casilla copiaDestino = copiaTablero.tabla[x][y];
 
+        Pieza moverCopia = copiaOrigen.getPieza();
+
+        // Simular el movimiento en el tablero copiado
+        copiaOrigen.setPieza(new Pieza('-'));
+        copiaOrigen.quitarPieza();
+        copiaDestino.setPieza(moverCopia);
+
+        // Verificar si el rey queda en jaque tras el movimiento
+        boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
+        JOptionPane.showMessageDialog(null, "Luego del movimento sigues en jaque? -> " + sigueJaque);
+        if (sigueJaque) {
+            System.out.println("Movimiento inválido: tu rey quedaría en jaque.");
+            return false;
+        }
+
+        //Movimiento!
         pieza.setPieza(new Pieza('-'));
         pieza.quitarPieza();
         objetivo.setPieza(mover);

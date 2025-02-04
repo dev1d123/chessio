@@ -26,7 +26,9 @@ public class Tablero {
             for (int j = 0; j < tabla[i].length; j++) {
                 Casilla nuevaCasilla = new Casilla(otro.tabla[i][j]); 
                 if(otro.tabla[i][j].tienePieza()){
-                    nuevaCasilla.setPieza(otro.tabla[i][j].getPieza());
+
+                    Pieza nuevaPieza = otro.tabla[i][j].getPieza().clonar();                    
+                    nuevaCasilla.setPieza(nuevaPieza);
                 }else{
                         //new Pieza('-');
                     nuevaCasilla.setPieza(new Pieza('-'));

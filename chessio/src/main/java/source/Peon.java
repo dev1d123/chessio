@@ -16,7 +16,14 @@ public class Peon extends Pieza implements PiezaInterfaz{
     
     //color 
     private boolean primerizo = true;
-    
+
+    public Peon(Peon otro) {
+        super(otro.getX(), otro.getY(), otro.getSigno(), otro.getPlayer(), otro.textureID);
+        this.primerizo = otro.primerizo;
+        this.imgPath1 = otro.imgPath1;
+        this.imgPath2 = otro.imgPath2;
+    }
+
     public Peon(int x, int y, Player player, int textureID) {
         super(x, y, 'P', player, textureID);
 
@@ -96,5 +103,8 @@ public class Peon extends Pieza implements PiezaInterfaz{
     private boolean posValida(int fila, int columna) {
         return (fila >= 0 && columna >= 0 && fila <= 7 && columna <= 7);
     }
-    
+
+    public Peon clonar() {
+        return new Peon(this);
+    }
 }

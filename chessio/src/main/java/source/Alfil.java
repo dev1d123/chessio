@@ -15,7 +15,12 @@ import interfazGrafica.TexturesPath;
 public class Alfil extends Pieza implements PiezaInterfaz{
     //Inicia el juego y cuando se corona
     //x, y, signo
-    
+    public Alfil(Alfil otro) {
+        super(otro.getX(), otro.getY(), otro.getSigno(), otro.getPlayer(), otro.textureID);
+        this.imgPath1 = otro.imgPath1;
+        this.imgPath2 = otro.imgPath2;
+    }
+
     public Alfil(int x, int y, Player player, int textureID) {
         super(x, y, 'A', player, textureID);
         
@@ -41,6 +46,8 @@ public class Alfil extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-    
+    public Alfil clonar() {
+        return new Alfil(this);
+    }
     
 }

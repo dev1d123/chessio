@@ -14,7 +14,7 @@ public class Pieza{
     //private Jugador j
     //private boolean valido
     private char signo;
-    private int textureID;
+    public int textureID;
     private Player player;
             
     private boolean estaClavado;
@@ -93,7 +93,7 @@ public class Pieza{
         this.textureID = otra.textureID;
         this.player = otra.player; // Si Player necesita una copia profunda, crea un constructor de copia para Player
         this.estaClavado = otra.estaClavado;
-        this.imgPath1 = otra.imgPath1;
+        this.imgPath1 = otra.imgPath1;  
         this.imgPath2 = otra.imgPath2;
     
         // Copiar la lista de movimientos (si es mutable, usa una nueva instancia)
@@ -102,6 +102,14 @@ public class Pieza{
         this.x = otra.x;
         this.y = otra.y;
     }
+    public Pieza clonar() {
+        try {
+            return (Pieza) this.clone(); // Clonación superficial
+        } catch (CloneNotSupportedException e) {
+            return new Pieza(this); // En caso de error, usa el constructor de copia
+        }
+    }
+
     public String obtenerNombreClase() {
         return this.getClass().getSimpleName(); 
     }

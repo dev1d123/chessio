@@ -7,7 +7,13 @@ import interfazGrafica.TexturesPath;
 public class Rey extends Pieza implements PiezaInterfaz {
 
     public boolean jaque = false;
-
+    
+    public Rey(Rey otro) {
+        super(otro.getX(), otro.getY(), otro.getSigno(), otro.getPlayer(), otro.textureID);
+        this.jaque = otro.jaque;
+        this.imgPath1 = otro.imgPath1;
+        this.imgPath2 = otro.imgPath2;
+    }
     public Rey(int x, int y, Player player, int textureID) {
         super(x, y, 'R', player, textureID);
         imgPath1 = TexturesPath.getPath(false, textureID, 5);
@@ -115,6 +121,9 @@ public class Rey extends Pieza implements PiezaInterfaz {
             ans+= "("+p.X+", "+p.Y+")\n";
         }
         return ans;
+    }
+    public Rey clonar() {
+        return new Rey(this);
     }
 }
 

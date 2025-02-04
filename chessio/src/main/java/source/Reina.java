@@ -15,6 +15,11 @@ import interfazGrafica.TexturesPath;
 public class Reina extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
+    public Reina(Reina otro) {
+        super(otro.getX(), otro.getY(), otro.getSigno(), otro.getPlayer(), otro.textureID);
+        this.imgPath1 = otro.imgPath1;
+        this.imgPath2 = otro.imgPath2;
+    }
     public Reina(int x, int y, Player player, int textureID) {
         super(x, y, 'Q', player, textureID);
         imgPath1 = TexturesPath.getPath(false, textureID, 4);
@@ -42,5 +47,7 @@ public class Reina extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-    
+    public Reina clonar() {
+        return new Reina(this);
+    }
 }

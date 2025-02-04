@@ -15,6 +15,11 @@ import interfazGrafica.TexturesPath;
 public class Caballo extends Pieza implements PiezaInterfaz{
         //Inicia el juego y cuando se corona
     //x, y, signo
+    public Caballo(Caballo otro) {
+        super(otro.getX(), otro.getY(), otro.getSigno(), otro.getPlayer(), otro.textureID);
+        this.imgPath1 = otro.imgPath1;
+        this.imgPath2 = otro.imgPath2;
+    }
     public Caballo(int x, int y, Player player, int textureID) {
         super(x, y, 'C', player, textureID);
         imgPath1 = TexturesPath.getPath(false, textureID, 2);
@@ -59,6 +64,8 @@ public class Caballo extends Pieza implements PiezaInterfaz{
         }
         return ans;
     }
-
+    public Caballo clonar() {
+        return new Caballo(this);
+    }
 }
 

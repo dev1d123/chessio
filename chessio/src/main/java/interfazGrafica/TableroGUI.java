@@ -58,7 +58,7 @@ public class TableroGUI extends JFrame {
         repaint();
     }
     
-    public void paintMovements(ArrayList<Pair> mov) {
+    public void paintMovements(ArrayList<Pair> mov, Tablero tabla) {
         System.out.println("WASDASFVASDFVEDRG");
         for (int i = 0; i < 64; i++) {
             if ((i % 8 + i / 8) % 2 == 0) {
@@ -74,6 +74,24 @@ public class TableroGUI extends JFrame {
                 buttons[p.getY()][p.getX()].setBackground(Color.YELLOW);
             }
         }
+        
+        for (int i = 0; i < 64; i++) {
+            final int a = i;
+
+            
+            if ((tabla.tabla[i / 8][i % 8].tienePieza())) {
+                Pieza waos = tabla.tabla[i / 8][i % 8].getPieza();
+                if(waos.obtenerNombreClase().equals("Rey")){
+                    Rey mirey = (Rey)waos;
+                    if(mirey.jaque){
+                        buttons[i % 8][i/8].setBackground(Color.BLUE);
+                    }
+                }
+            }
+
+        }
+
+
         revalidate();
         repaint();
 
