@@ -52,16 +52,16 @@ public class Rey extends Pieza implements PiezaInterfaz {
             }
             */
             if (puedeEnrocarCorto(tabla, movJ1)) {
-                if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 1, movJ2, movJ1) &&
-                    !Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 2, movJ2, movJ1)) {
+                //if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 1, movJ2, movJ1) &&
+                    //!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 2, movJ2, movJ1)) {
                     res.add(new Pair(this.getX(), this.getY() + 2));
-                }           
+                //}           
             }
             if (puedeEnrocarLargo(tabla, movJ1)) {
-                if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() - 1, movJ2, movJ1) &&
-                    !Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() - 2, movJ2, movJ1)) {
+                //if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() - 1, movJ2, movJ1) &&
+                    //!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() - 2, movJ2, movJ1)) {
                     res.add(new Pair(this.getX(), this.getY() - 2));
-                }         
+                //}         
             }
         }
         

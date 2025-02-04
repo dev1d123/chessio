@@ -112,8 +112,8 @@ public class Juego {
                 if (selectedPiece == null) {
                     //JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
                     //bro ._.
-                    boolean asd = hayJaque(j1, j2, tab, tabla);
-                    boolean tra = hayJaque(j2, j1, tab, tabla);
+                    //boolean asd = hayJaque(j1, j2, tab, tabla);
+                    //boolean tra = hayJaque(j2, j1, tab, tabla);
                     Pair selection = tab.seleccionarElemento();
                     selectedPiece = seleccionarPieza(currentPlayer, selection.X, selection.Y);
 
@@ -131,16 +131,16 @@ public class Juego {
                         tab.paintMovements(availableMoves);
 
                         
-                        boolean useless1 = hayJaque(j1, j2, tab, tabla);
-                        boolean useless2 = hayJaque(j2, j1, tab, tabla);
+                        //boolean useless1 = hayJaque(j1, j2, tab, tabla);
+                        //boolean useless2 = hayJaque(j2, j1, tab, tabla);
                         for (Pair move : availableMoves) {
                             //System.out.println("Movimiento posible: " + move.X + ", " + move.Y);
                         }
                     }
                 } else {
                     //JOptionPane.showMessageDialog(null, "Seleccione una posición para mover o seleccione otra pieza.");
-                    boolean asd = hayJaque(j1, j2, tab, tabla);
-                    boolean tra = hayJaque(j2, j1, tab, tabla);
+                    //boolean asd = hayJaque(j1, j2, tab, tabla);
+                    //boolean tra = hayJaque(j2, j1, tab, tabla);
                     Pair selection = tab.seleccionarElemento();
 
                     Casilla newSelection = seleccionarPieza(currentPlayer, selection.X, selection.Y);
@@ -154,10 +154,10 @@ public class Juego {
                         }
 
                         tab.paintMovements(availableMoves);
-                        
+                        /*
                         boolean useless1 = hayJaque(j1, j2, tab, tabla);
                         boolean useless2 = hayJaque(j2, j1, tab, tabla);
-
+                        */
                         System.out.println("Nueva pieza seleccionada: " + selectedPiece);
                         continue;
                     }
@@ -182,7 +182,7 @@ public class Juego {
                         }
                         
 
-
+                        /*
                         if(turno%2 == 0){
                             if(hayJaque(white, black, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
@@ -203,7 +203,7 @@ public class Juego {
                             }
                             
                         }
-                        
+                        */
                         break;
                         
                     }
@@ -278,6 +278,7 @@ public class Juego {
         rey.jaque = false;
         return false;
     }
+   
 
     public boolean hayJaqueMate(Player p1, Player p2, TableroGUI tab, Tablero originalTab, int turno) {
         //System.out.println("TESTEANDO MATE");
@@ -338,7 +339,7 @@ public class Juego {
         System.out.println("JAQUE MATE");
         return true;
     }
-    
+  
 
     public Casilla seleccionarPieza(Player p, int x, int y){ //jugador
 
