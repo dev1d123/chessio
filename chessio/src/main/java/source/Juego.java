@@ -187,9 +187,11 @@ public class Juego {
                             if(hayJaque(white, black, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
+                            /*
                             if(hayTablas(white, black, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay tablas, empate", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
+                            */
                             if(hayJaqueMate(white, black, tab, tabla, turno)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque mate!!!", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
 
@@ -199,9 +201,11 @@ public class Juego {
                             if(hayJaque(black, white, tab, tabla)){
                                 JOptionPane.showMessageDialog(null,"Hay un jaque","Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
+                            /*
                             if(hayTablas(black, white, tab, tabla)){
                                 JOptionPane.showMessageDialog(null, "Hay tablas, empate", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
+                            */
                             if(hayJaqueMate(black, white, tab, tabla, turno)){
                                 JOptionPane.showMessageDialog(null, "Hay un jaque mate!!!", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
                             }
