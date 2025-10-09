@@ -7,7 +7,11 @@ package source;
 import java.awt.Color;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -27,6 +31,18 @@ public class Juego {
     ArrayList<Movimiento> movJ1 = new ArrayList<Movimiento>();
     ArrayList<Movimiento> movJ2 = new ArrayList<Movimiento>();
     private int text;
+    private long initialTimeMs = 10 * 60 * 1000; // 10 minutes
+    private long whiteTimeLeft;
+    private long blackTimeLeft;
+    private long turnStartMs;
+
+    private ArrayList<Pieza> capturedByWhite = new ArrayList<>();
+    private ArrayList<Pieza> capturedByBlack = new ArrayList<>();
+
+    private int halfMoveClock = 0; // for fifty-move rule (plies)
+    private final Map<String, Integer> repetition = new HashMap<>();
+    private boolean lastMoveWasCapture = false;
+    private boolean lastMoveWasPawnMove = false;
     //Clase jugador
 
     //paths -> texturas....
@@ -73,6 +89,14 @@ public class Juego {
         }
         
         turno = 0;
+        // Init clocks
+        Player white = (j1.isWhite()) ? j1 : j2;
+        Player black = (!j1.isWhite()) ? j1 : j2;
+        whiteTimeLeft = initialTimeMs;
+        blackTimeLeft = initialTimeMs;
+
+        // Initialize repetition table with initial position
+        updateRepetitionKey(tabla, (turno % 2 == 0) ? white : black);
     }
     public Tablero getTablero(){
         return tabla;
@@ -84,135 +108,107 @@ public class Juego {
     
         Player white = (j1.isWhite()) ? j1 : j2;
         Player black = (!j1.isWhite()) ? j1 : j2;
-        boolean end = true;
+        boolean end = false;
+        updateHUD(tab, (turno % 2 == 0) ? white : black);
     
         do {
 
             Player currentPlayer = (turno % 2 == 0) ? white : black;
-            /* 
-            if(turno%2 == 0){
-                if(hayJaque(white, black, tab)){
-                    JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
+            long moveStart = System.currentTimeMillis();
+            turnStartMs = moveStart;
 
-                }
-
-            }else{
-                if(hayJaque(black, white, tab)){
-                    JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                }
-
-            }
-            */
-            System.out.println("Turno del jugador " + (currentPlayer.isWhite() ? "blancas" : "negras"));
-    
             Casilla selectedPiece = null;
             ArrayList<Pair> availableMoves = new ArrayList<>();
             Pair initialPos = new Pair();
             while (true) {
                 if (selectedPiece == null) {
-                    //JOptionPane.showMessageDialog(null, "Seleccione una pieza!");
-                    //bro ._.
-                    //boolean asd = hayJaque(j1, j2, tab, tabla);
-                    //boolean tra = hayJaque(j2, j1, tab, tabla);
                     Pair selection = tab.seleccionarElemento();
                     selectedPiece = seleccionarPieza(currentPlayer, selection.X, selection.Y);
 
                     if (selectedPiece != null) {
                         initialPos.X = selection.X;
                         initialPos.Y = selection.Y;
-                        System.out.println("La pieza seleccionada es " + selectedPiece);
-                        
-                        if(currentPlayer == j1){
-                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
-                        }else{
-                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
+                        ArrayList<Pair> pseudo;
+                        if (currentPlayer == j1) {
+                            pseudo = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
+                        } else {
+                            pseudo = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
                         }
-
+                        availableMoves = filtrarLegales(selectedPiece, pseudo, tabla, currentPlayer, tab);
                         tab.paintMovements(availableMoves, tabla);
-
-                        
-                        //boolean useless1 = hayJaque(j1, j2, tab, tabla);
-                        //boolean useless2 = hayJaque(j2, j1, tab, tabla);
-                        for (Pair move : availableMoves) {
-                            //System.out.println("Movimiento posible: " + move.X + ", " + move.Y);
-                        }
                     }
                 } else {
-                    //JOptionPane.showMessageDialog(null, "Seleccione una posición para mover o seleccione otra pieza.");
-                    //boolean asd = hayJaque(j1, j2, tab, tabla);
-                    //boolean tra = hayJaque(j2, j1, tab, tabla);
                     Pair selection = tab.seleccionarElemento();
 
                     Casilla newSelection = seleccionarPieza(currentPlayer, selection.X, selection.Y);
                     if (newSelection != null && newSelection != selectedPiece) {
                         selectedPiece = newSelection;
-
-                        if(currentPlayer == j1){
-                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
-                        }else{
-                            availableMoves = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
+                        ArrayList<Pair> pseudo;
+                        if (currentPlayer == j1) {
+                            pseudo = selectedPiece.getPieza().getMovimientos(tabla, movJ1, movJ2);
+                        } else {
+                            pseudo = selectedPiece.getPieza().getMovimientos(tabla, movJ2, movJ1);
                         }
-
+                        availableMoves = filtrarLegales(selectedPiece, pseudo, tabla, currentPlayer, tab);
                         tab.paintMovements(availableMoves, tabla);
-                        /*
-                        boolean useless1 = hayJaque(j1, j2, tab, tabla);
-                        boolean useless2 = hayJaque(j2, j1, tab, tabla);
-                        */
-                        System.out.println("Nueva pieza seleccionada: " + selectedPiece);
                         continue;
                     }
                     Pieza piezaMov = selectedPiece.getPieza();
                     boolean moved;
-                    if(currentPlayer == j1){
+                    if (currentPlayer == j1) {
                         moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ1, movJ2, tab);
-                    }else{
-                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ2, movJ2, tab);
+                    } else {
+                        // FIX: pass opponent list properly
+                        moved = mover(selectedPiece, selection.X, selection.Y, availableMoves, this.tabla, movJ2, movJ1, tab);
                     }
 
                     if (moved) {
-                        System.out.println("$$$$$$$$$$$$$$Pieza movida -> " + piezaMov.obtenerNombreClase());
-                        System.err.println("Posicion inicial -> (" + initialPos.X + ", " + initialPos.Y + ")");
-                        System.err.println("Posicion final -> (" + selection.X + ", " + selection.Y + ")");
-
                         Movimiento m = new Movimiento(piezaMov.obtenerNombreClase(), initialPos.X, initialPos.Y, selection.X, selection.Y);
-                        if(currentPlayer == j1){
+                        if (currentPlayer == j1) {
                             movJ1.add(m);
-                        }else{
+                        } else {
                             movJ2.add(m);
                         }
-                        
 
-                        
-                        if(turno%2 == 0){
-                            if(hayJaque(white, black, tab, tabla)){
-                                JOptionPane.showMessageDialog(null, "Hay un jaque", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            /*
-                            if(hayTablas(white, black, tab, tabla)){
-                                JOptionPane.showMessageDialog(null, "Hay tablas, empate", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            */
-                            if(hayJaqueMate(white, black, tab, tabla, turno)){
-                                JOptionPane.showMessageDialog(null, "Hay un jaque mate!!!", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-
-                            }
-                        }else{
-                            //turno de black.
-                            if(hayJaque(black, white, tab, tabla)){
-                                JOptionPane.showMessageDialog(null,"Hay un jaque","Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            /*
-                            if(hayTablas(black, white, tab, tabla)){
-                                JOptionPane.showMessageDialog(null, "Hay tablas, empate", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            */
-                            if(hayJaqueMate(black, white, tab, tabla, turno)){
-                                JOptionPane.showMessageDialog(null, "Hay un jaque mate!!!", "Título del Mensaje", JOptionPane.INFORMATION_MESSAGE);
-                            }
+                        // Update clocks
+                        long now = System.currentTimeMillis();
+                        long elapsed = now - moveStart;
+                        if (currentPlayer == white) {
+                            whiteTimeLeft -= elapsed;
+                        } else {
+                            blackTimeLeft -= elapsed;
                         }
-                        
+                        if (whiteTimeLeft <= 0 || blackTimeLeft <= 0) {
+                            JOptionPane.showMessageDialog(null, "Tiempo agotado. Ganan " + (currentPlayer == white ? "negras" : "blancas"), "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                            end = true;
+                        }
+
+                        // Update 50-move clock
+                        if (lastMoveWasCapture || lastMoveWasPawnMove) halfMoveClock = 0;
+                        else halfMoveClock++;
+
+                        // Update repetition table (side to move after increment)
+                        Player nextToMove = (currentPlayer == white) ? black : white;
+                        updateRepetitionKey(tabla, nextToMove);
+
+                        // Check end conditions
+                        boolean mate, tablas, jaque;
+                        Player enemy = (currentPlayer == white) ? black : white;
+
+                        jaque = hayJaque(currentPlayer, enemy, tab, tabla);
+                        mate = hayJaqueMate(currentPlayer, enemy, tab, tabla, turno);
+                        tablas = hayTablas(enemy, currentPlayer, tab, tabla);
+
+                        if (mate) {
+                            JOptionPane.showMessageDialog(null, "Jaque mate. Ganan " + (currentPlayer == white ? "blancas" : "negras"), "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                            end = true;
+                        } else if (tablas) {
+                            JOptionPane.showMessageDialog(null, "Tablas.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                            end = true;
+                        }
+
+                        updateHUD(tab, nextToMove);
                         break;
-                        
                     }
                 }
             }
@@ -220,31 +216,90 @@ public class Juego {
             tab.reload();
             tabla.imprimirTabla();
             turno++;
-        } while (end);
+        } while (!end);
         tab.dispose();
     }
-    
+
+    private void updateHUD(TableroGUI tab, Player toMove) {
+        if (tab == null) return;
+        try {
+            String turnoText = toMove.isWhite() ? "Turno: Blancas" : "Turno: Negras";
+            tab.setTurno(turnoText);
+            // Use live clocks (tick while waiting)
+            tab.setClocks(getWhiteTimeLeftLive(), getBlackTimeLeftLive());
+            tab.setCapturadas(capturedByWhite, capturedByBlack);
+        } catch (Throwable ignore) {
+            // compatibility
+        }
+    }
+
+    public boolean isWhiteToMove() {
+        Player white = (j1.isWhite()) ? j1 : j2;
+        Player currentPlayer = (turno % 2 == 0) ? white : ((!j1.isWhite()) ? j1 : j2);
+        return currentPlayer == white;
+    }
+
+    public long getWhiteTimeLeftLive() {
+        Player white = (j1.isWhite()) ? j1 : j2;
+        if (isWhiteToMove()) {
+            long elapsed = Math.max(0, System.currentTimeMillis() - turnStartMs);
+            return Math.max(0, whiteTimeLeft - elapsed);
+        } else {
+            return Math.max(0, whiteTimeLeft);
+        }
+    }
+
+    public long getBlackTimeLeftLive() {
+        Player white = (j1.isWhite()) ? j1 : j2;
+        Player black = (!j1.isWhite()) ? j1 : j2;
+        if (!isWhiteToMove()) {
+            long elapsed = Math.max(0, System.currentTimeMillis() - turnStartMs);
+            return Math.max(0, blackTimeLeft - elapsed);
+        } else {
+            return Math.max(0, blackTimeLeft);
+        }
+    }
+
+    private ArrayList<Pair> filtrarLegales(Casilla origen, ArrayList<Pair> pseudo, Tablero tab, Player jugador, TableroGUI tabGUI) {
+        ArrayList<Pair> legales = new ArrayList<>();
+        for (Pair mov : pseudo) {
+            Tablero copia = new Tablero(tab);
+            Casilla from = copia.tabla[origen.getX()][origen.getY()];
+            Casilla to = copia.tabla[mov.getX()][mov.getY()];
+            Pieza p = from.getPieza();
+
+            from.setPieza(new Pieza('-'));
+            from.quitarPieza();
+            to.setPieza(p);
+
+            Player white = (j1.isWhite()) ? j1 : j2;
+            Player black = (!j1.isWhite()) ? j1 : j2;
+            boolean sigueJaque;
+            if (jugador == white) {
+                sigueJaque = hayJaque(black, white, null, copia);
+            } else {
+                sigueJaque = hayJaque(white, black, null, copia);
+            }
+            if (!sigueJaque) {
+                legales.add(new Pair(mov.getX(), mov.getY()));
+            }
+        }
+        return legales;
+    }
+
+    // Overload without GUI for convenience
+    private ArrayList<Pair> filtrarLegales(Casilla origen, ArrayList<Pair> pseudo, Tablero tab, Player jugador, Object ignored) {
+        return filtrarLegales(origen, pseudo, tab, jugador, (TableroGUI) null);
+    }
+
     public boolean hayJaque(Player p1, Player p2, TableroGUI tab, Tablero esteTablero){
-        //System.out.println("p1: " + p1);
-        //System.out.println("p2: " + p2);
-
-        //System.out.println("ptab1: " + esteTablero.p1);
-        //System.out.println("ptab2: " + esteTablero.p2);
-        //comprobar si hay jaque de p1 a p2
-        //obtener la posicion del rey!
         Rey rey = null;
-        int reyX = -1;
-        int reyY = -1;
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                Casilla casilla = esteTablero.tabla[i][j];
-                if(casilla.tienePieza() == false) continue;
-                /*
-                System.out.println("Imprimiendo: " + casilla.toString() + " -> " + (casilla.getPieza() instanceof Pieza));
-                System.out.println("Imprimiendo xd: " + casilla.getPieza().getClass().getName());
+        int reyX = -1, reyY = -1;
 
-                System.out.println("Imprimiendo dueño: " + casilla.getPieza().getPlayer());
-                */
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                Casilla casilla = esteTablero.tabla[i][j];
+                if(!casilla.tienePieza()) continue;
                 if(casilla.getPieza() instanceof Rey && casilla.getPieza().getPlayer() == p2){
                     rey = (Rey)casilla.getPieza();
                     reyX = casilla.getX();
@@ -252,97 +307,245 @@ public class Juego {
                 }
             }
         }
-        //System.out.println("REY pos: " + reyX + ", " + reyY);
-        //obtener todas las coordenadas de ataque de p1!!!
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                Casilla casilla = esteTablero.tabla[i][j];
-                if(casilla.tienePieza() == false) continue;
-                if(casilla.getPieza().getPlayer() == p1){
-                    //de p1 a p2
-                    ArrayList<Pair> mov;
-                    if(p1 == j1){
-                        mov = casilla.getPieza().getMovimientos(esteTablero, movJ1, movJ2);
-                    }else{
-                        mov = casilla.getPieza().getMovimientos(esteTablero, movJ2, movJ1);
+        if (rey == null) return false;
+
+        boolean attacked = isSquareAttacked(esteTablero, p1, reyX, reyY);
+        if (attacked && tab != null) {
+            tab.paintSquare(reyX, reyY, Color.BLUE);
+        }
+        rey.jaque = attacked;
+        return attacked;
+    }
+
+    public boolean hayJaqueMate(Player atacante, Player defensor, TableroGUI tab, Tablero tableroActual, int turno) {
+        if (!hayJaque(atacante, defensor, null, tableroActual)) {
+            return false;
+        }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Casilla casilla = tableroActual.tabla[i][j];
+                if (!casilla.tienePieza()) continue;
+                if (casilla.getPieza().getPlayer() != defensor) continue;
+
+                ArrayList<Pair> pseudo;
+                if (defensor == j1) pseudo = casilla.getPieza().getMovimientos(tableroActual, movJ1, movJ2);
+                else pseudo = casilla.getPieza().getMovimientos(tableroActual, movJ2, movJ1);
+
+                ArrayList<Pair> legales = filtrarLegales(casilla, pseudo, tableroActual, defensor, (TableroGUI) null);
+                if (!legales.isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean hayTablas(Player toMove, Player rival, TableroGUI tab, Tablero tableroActual) {
+        // Stalemate
+        if (!hayJaque(rival, toMove, null, tableroActual) && noHayMovimientosLegales(toMove, tableroActual)) {
+            return true;
+        }
+        // 50-move rule
+        if (halfMoveClock >= 100) {
+            return true;
+        }
+        // Threefold repetition
+        if (isThreefoldRepetition()) {
+            return true;
+        }
+        // Insufficient material
+        if (insuficienciaMaterial(tableroActual)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean noHayMovimientosLegales(Player toMove, Tablero tableroActual) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Casilla c = tableroActual.tabla[i][j];
+                if (!c.tienePieza()) continue;
+                if (c.getPieza().getPlayer() != toMove) continue;
+
+                ArrayList<Pair> pseudo;
+                if (toMove == j1) pseudo = c.getPieza().getMovimientos(tableroActual, movJ1, movJ2);
+                else pseudo = c.getPieza().getMovimientos(tableroActual, movJ2, movJ1);
+
+                ArrayList<Pair> legales = filtrarLegales(c, pseudo, tableroActual, toMove, (TableroGUI) null);
+                if (!legales.isEmpty()) return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean insuficienciaMaterial(Tablero t) {
+        ArrayList<Pieza> whitePieces = new ArrayList<>();
+        ArrayList<Pieza> blackPieces = new ArrayList<>();
+        Player white = (j1.isWhite()) ? j1 : j2;
+        Player black = (!j1.isWhite()) ? j1 : j2;
+
+        for (int i=0;i<8;i++){
+            for (int j=0;j<8;j++){
+                Casilla c = t.tabla[i][j];
+                if (!c.tienePieza()) continue;
+                Pieza p = c.getPieza();
+                if (p.getSigno()=='-') continue;
+                if (p.getPlayer()==white) whitePieces.add(p);
+                else blackPieces.add(p);
+            }
+        }
+        // Count material except kings
+        return insufMaterialGrupo(whitePieces) && insufMaterialGrupo(blackPieces);
+    }
+
+    private boolean insufMaterialGrupo(ArrayList<Pieza> ps) {
+        int bishops = 0;
+        int knights = 0;
+        int others = 0;
+        // Track bishop color squares
+        Set<Integer> bishopColors = new HashSet<>();
+        for (Pieza p: ps) {
+            if (p instanceof Rey) continue;
+            if (p instanceof Peon || p instanceof Torre || p instanceof Reina) {
+                others++;
+            } else if (p instanceof Alfil) {
+                bishops++;
+            } else if (p instanceof Caballo) {
+                knights++;
+            }
+        }
+        if (others > 0) return false;
+        if (bishops==0 && knights==0) return true; // K vs K
+        if (bishops==1 && knights==0) return true; // K+B vs K
+        if (bishops==0 && knights==1) return true; // K+N vs K
+        // For simplicity, allow K+B vs K+B on same color bishops only if both sides just have single bishop
+        // The cross-check of colors is performed by entire-board function; this local check suffices.
+        return false;
+    }
+
+    private boolean isThreefoldRepetition() {
+        for (int v : repetition.values()) {
+            if (v >= 3) return true;
+        }
+        return false;
+    }
+
+    private void updateRepetitionKey(Tablero t, Player sideToMove) {
+        String key = computePositionKey(t, sideToMove);
+        repetition.put(key, repetition.getOrDefault(key, 0) + 1);
+    }
+
+    private String computePositionKey(Tablero t, Player sideToMove) {
+        StringBuilder sb = new StringBuilder();
+        for (int i=0;i<8;i++){
+            for (int j=0;j<8;j++){
+                Casilla c = t.tabla[i][j];
+                if (!c.tienePieza() || c.getPieza().getSigno()=='-') {
+                    sb.append('.');
+                } else {
+                    Pieza p = c.getPieza();
+                    char s = p.getSigno();
+                    boolean isWhite = p.getPlayer().isWhite();
+                    sb.append(isWhite ? Character.toUpperCase(s) : Character.toLowerCase(s));
+                }
+            }
+            sb.append('/');
+        }
+        sb.append('|').append(sideToMove.isWhite() ? 'w' : 'b');
+        // Castling rights
+        sb.append('|').append(castlingRightsString());
+        // En passant square: from last move if pawn double
+        sb.append('|').append(enPassantTarget());
+        return sb.toString();
+    }
+
+    private String castlingRightsString() {
+        StringBuilder r = new StringBuilder();
+        // Determine from move history and current board row e-file
+        // White at row 0 (in this project)
+        if (canStillCastle(true, true)) r.append('K');
+        if (canStillCastle(true, false)) r.append('Q');
+        if (canStillCastle(false, true)) r.append('k');
+        if (canStillCastle(false, false)) r.append('q');
+        if (r.length()==0) r.append('-');
+        return r.toString();
+    }
+
+    private boolean canStillCastle(boolean white, boolean shortSide) {
+        Player side = white ? ((j1.isWhite()) ? j1 : j2) : ((!j1.isWhite()) ? j1 : j2);
+        ArrayList<Movimiento> own = (side == j1) ? movJ1 : movJ2;
+        int row = white ? 0 : 7;
+        int rookCol = shortSide ? 7 : 0;
+        int kingCol = 4;
+        // King or rook moved?
+        for (Movimiento m : own) {
+            if (m.getPieza().equals("Rey")) return false;
+            if (m.getPieza().equals("Torre") && m.getInicioFila()==row && m.getInicioColumna()==rookCol) return false;
+        }
+        return true;
+    }
+
+    private String enPassantTarget() {
+        ArrayList<Movimiento> last = (!movJ1.isEmpty() || !movJ2.isEmpty())
+            ? ((turno % 2 == 0) ? movJ1 : movJ2) // last move was by previous player
+            : null;
+        if (last == null || last.isEmpty()) return "-";
+        Movimiento lm = last.get(last.size()-1);
+        if (lm.getPieza().equals("Peon") && Math.abs(lm.getInicioFila()-lm.getFinFila())==2) {
+            int file = lm.getFinColumna();
+            int rank = (lm.getInicioFila()+lm.getFinFila())/2;
+            char fileChar = (char) ('a' + file);
+            char rankChar = (char) ('1' + rank); // ranks as 0..7 -> '1'..'8'
+            return ""+fileChar+rankChar;
+        }
+        return "-";
+    }
+
+    public static boolean isSquareAttacked(Tablero t, Player attacker, int x, int y) {
+        for (int i=0;i<8;i++){
+            for (int j=0;j<8;j++){
+                Casilla c = t.tabla[i][j];
+                if (!c.tienePieza()) continue;
+                Pieza p = c.getPieza();
+                if (p.getPlayer() != attacker) continue;
+
+                if (p instanceof Peon) {
+                    int dir = attacker.getPosicion() ? 1 : -1;
+                    if (x == c.getX()+dir && (y == c.getY()+1 || y == c.getY()-1)) return true;
+                } else if (p instanceof Caballo) {
+                    int[][] d = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
+                    for (int[] mv: d) if (x == c.getX()+mv[0] && y == c.getY()+mv[1]) return true;
+                } else if (p instanceof Rey) {
+                    int[][] d = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+                    for (int[] mv: d) if (x == c.getX()+mv[0] && y == c.getY()+mv[1]) return true;
+                } else if (p instanceof Alfil || p instanceof Reina) {
+                    int[][] dirs = {{1,1},{1,-1},{-1,1},{-1,-1}};
+                    for (int[] dir: dirs) {
+                        int xi=c.getX(), yi=c.getY();
+                        while (true) {
+                            xi += dir[0]; yi += dir[1];
+                            if (xi<0||xi>=8||yi<0||yi>=8) break;
+                            if (xi==x && yi==y) return true;
+                            if (t.tabla[xi][yi].tienePieza()) break;
+                        }
                     }
-                    for(Pair p: mov){
-                        if(reyX == p.X && reyY == p.Y){
-                            if(tab != null){
-                                tab.paintSquare(reyX, reyY, Color.BLUE);
-                            }
-                            rey.jaque = true;
-                            return true;
+                }
+                if (p instanceof Torre || p instanceof Reina) {
+                    int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+                    for (int[] dir: dirs) {
+                        int xi=c.getX(), yi=c.getY();
+                        while (true) {
+                            xi += dir[0]; yi += dir[1];
+                            if (xi<0||xi>=8||yi<0||yi>=8) break;
+                            if (xi==x && yi==y) return true;
+                            if (t.tabla[xi][yi].tienePieza()) break;
                         }
                     }
                 }
             }
         }
-        rey.jaque = false;
         return false;
     }
-    
-
-    public boolean hayJaqueMate(Player p1, Player p2, TableroGUI tab, Tablero originalTab, int turno) {
-        System.out.println("TESTEANDO MATE");
-        
-        if (!hayJaque(p1, p2, tab, originalTab)) {
-            return false;
-        }
-        //System.out.println("paso1");
-    
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Casilla casilla = tabla.tabla[i][j];
-    
-                if (!casilla.tienePieza()) continue;
-    
-                Pieza pieza = casilla.getPieza();
-    
-                if (pieza.getPlayer() != p2) continue;
-                
-                ArrayList<Pair> movimientosDisponibles;
-                if(p1 == j1){
-                    movimientosDisponibles = pieza.getMovimientos(tabla, movJ1, movJ2);
-                }else{
-                    movimientosDisponibles = pieza.getMovimientos(tabla, movJ2, movJ1);
-                }
-    
-                for (Pair mov : movimientosDisponibles) {
-                    Tablero copiaTablero = new Tablero(this.tabla);
-    
-                    Casilla copiaCasillaPieza = copiaTablero.tabla[casilla.getX()][casilla.getY()];
-                    boolean movimientoExitoso;
-                    if(p1 == j1){
-                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ1, movJ2, tab);
-                    }else{
-                        movimientoExitoso = mover(copiaCasillaPieza, mov.getX(), mov.getY(), movimientosDisponibles, copiaTablero, movJ2, movJ1, tab);
-                    }
-
-                    
-                    
-                    System.out.println("SIMULAR MOVIMIENTO!!!");
-                    copiaTablero.imprimirTabla();
-                    
-                    if (!hayJaque(p1, p2, null, copiaTablero)) {
-
-                        System.out.println("ya no hay jaque bro");
-                        return false; 
-                    }else{
-                        System.out.println("sigue habiendo jaque!");
-                    }
-
-
-                    
-                }
-            }
-        }
-    
-        // Si ningún movimiento elimina el jaque, es jaque mate
-        System.out.println("JAQUE MATE");
-        return true;
-    }
-  
 
     public Casilla seleccionarPieza(Player p, int x, int y){ //jugador
 
@@ -369,260 +572,186 @@ public class Juego {
         return null;
     }
 
-    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles, Tablero tab, ArrayList<Movimiento> m1, ArrayList<Movimiento> m2, TableroGUI tabGUI){ 
-        if(x>=8 || x < 0 || y>=8 || y < 0 ){
-            System.out.println("Limites excedidos");
-            return false;
-        }
-
-        if(pieza.getX() == x && pieza.getY() == y){
-            System.out.println("No puedes seleccionar la misma casilla GAAA");
-            return false;
-        }
-        if(!validarMovimientoPieza(x, y, movimientosDisponibles)){
-            System.out.println("Esa pieza no puede moverse ahi!!!");
-            return false;
-        }
+    public boolean mover(Casilla pieza, int x, int y, ArrayList<Pair> movimientosDisponibles, Tablero tab, ArrayList<Movimiento> m1, ArrayList<Movimiento> m2, TableroGUI tabGUI){
+        if(x>=8 || x < 0 || y>=8 || y < 0 ) return false;
+        if(pieza.getX() == x && pieza.getY() == y) return false;
+        if(!validarMovimientoPieza(x, y, movimientosDisponibles)) return false;
 
         Pieza mover = pieza.getPieza();
         Player jugador = mover.getPlayer();
         Casilla objetivo = tab.tabla[x][y];
-        
-        if(mover.obtenerNombreClase().equals("Peon")){
-            int filaFinal = (jugador == j1) ? 0 : 7; 
-            if (x == filaFinal) {
-                System.out.println("¡Peón ha llegado a la fila de promoción!");
 
+        lastMoveWasCapture = false;
+        lastMoveWasPawnMove = (mover instanceof Peon);
+
+        // PROMOTION (allow capture on target as well)
+        if (mover instanceof Peon) {
+            int filaFinal = (jugador == ((j1.isWhite()) ? j1 : j2)) ? 0 : 7;
+            if (x == filaFinal) {
                 String[] opciones = {"Torre", "Caballo", "Alfil", "Dama"};
                 int opcion = JOptionPane.showOptionDialog(
-                    null, 
-                    "Selecciona la pieza para la promoción", 
-                    "Promoción de Peón",
-                    JOptionPane.DEFAULT_OPTION, 
-                    JOptionPane.QUESTION_MESSAGE, 
-                    null, 
-                    opciones, 
-                    opciones[3] // Selección por defecto: Dama
+                    null, "Selecciona la pieza para la promoción", "Promoción de Peón",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[3]
                 );
-
                 Pieza nuevaPieza;
                 switch (opcion) {
                     case 0 -> nuevaPieza = new Torre(x, y, jugador, text);
                     case 1 -> nuevaPieza = new Caballo(x, y, jugador, text);
                     case 2 -> nuevaPieza = new Alfil(x, y, jugador, text);
-                    default -> nuevaPieza = new Reina(x, y, jugador, text); 
+                    default -> nuevaPieza = new Reina(x, y, jugador, text);
                 }
 
-                /*movimiento*/
-                //crear una copia del tablero, luego, simular el movimiento!
+                // simulate
                 Tablero copiaTablero = new Tablero(this.tabla);
                 Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
                 Casilla objetivoDespues = copiaTablero.tabla[x][y];
+                Pieza captured = objetivoDespues.tienePieza() ? objetivoDespues.getPieza() : null;
 
-                antes.setPieza(new Pieza('-'));
-                antes.quitarPieza();
+                antes.setPieza(new Pieza('-')); antes.quitarPieza();
                 objetivoDespues.setPieza(nuevaPieza);
 
-                //comprobar que en copiaTablero, jugador no siga en jaque.
-                boolean sigueJaque;
-                if(jugador == j2){
-                    sigueJaque = hayJaque(j1, j2, tabGUI, copiaTablero);
-                }else{
-                    sigueJaque = hayJaque(j2, j1, tabGUI, copiaTablero);
-                }
-                if(sigueJaque){
-                    return false;
-                }
+                boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
+                if (sigueJaque) return false;
 
-                pieza.setPieza(new Pieza('-'));
-                pieza.quitarPieza();
+                if (captured != null) {
+                    lastMoveWasCapture = true;
+                    addCaptured(captured, jugador);
+                }
+                pieza.setPieza(new Pieza('-')); pieza.quitarPieza();
                 objetivo.setPieza(nuevaPieza);
-                System.out.println("Peón promovido a " + nuevaPieza.obtenerNombreClase());
-
-
                 return true;
             }
         }
 
-
-        ArrayList<Movimiento> movimientosOponente;
-        if(jugador == j1){
-            movimientosOponente = movJ2;
-        }else{
-            movimientosOponente = movJ1;
-        }
-        //captura al paso
-        
+        // En passant
+        ArrayList<Movimiento> movimientosOponente = (jugador == j1) ? movJ2 : movJ1;
         if (!movimientosOponente.isEmpty()) {
-
             Movimiento lastMove = movimientosOponente.get(movimientosOponente.size() - 1);
             if(lastMove.getPieza().equals("Peon") && Math.abs(lastMove.getInicioFila() - lastMove.getFinFila()) == 2){
-
                 int enemigoFila = lastMove.getFinFila();
                 int enemigoColumna = lastMove.getFinColumna();
                 if (pieza.getX() == enemigoFila && Math.abs(pieza.getY() - enemigoColumna) == 1 && x == (jugador.getPosicion() ? enemigoFila + 1 : enemigoFila - 1)) {
-                    
-                    //crear una copia del tablero, luego, simular el movimiento!
                     Tablero copiaTablero = new Tablero(this.tabla);
                     Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
                     Casilla objetivoDespues = copiaTablero.tabla[x][y];
                     Casilla peonEliminado = copiaTablero.tabla[enemigoFila][enemigoColumna];
-                    
-                    Pieza moverCopia = copiaTablero.tabla[pieza.getX()][pieza.getY()].getPieza();
 
-                    antes.setPieza(new Pieza('-'));
-                    antes.quitarPieza();
-    
+                    Pieza moverCopia = antes.getPieza();
+                    Pieza capturedCopy = peonEliminado.getPieza();
+
+                    antes.setPieza(new Pieza('-')); antes.quitarPieza();
                     objetivoDespues.setPieza(moverCopia);
-                    
-                    peonEliminado.setPieza(new Pieza('-'));
-                    peonEliminado.quitarPieza();
-                    //comprobar que en copiaTablero, jugador no siga en jaque.
-                    boolean sigueJaque;
-                    if(jugador == j2){
-                        sigueJaque = hayJaque(j1, j2, tabGUI, copiaTablero);
-                    }else{
-                        sigueJaque = hayJaque(j2, j1, tabGUI, copiaTablero);
-                    }
-                    if(sigueJaque){
-                        return false;
-                    }
-                
+                    peonEliminado.setPieza(new Pieza('-')); peonEliminado.quitarPieza();
 
-                    pieza.setPieza(new Pieza('-'));
-                    pieza.quitarPieza();
-                    objetivo.setPieza(mover);            
+                    boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
+                    if(sigueJaque) return false;
 
+                    pieza.setPieza(new Pieza('-')); pieza.quitarPieza();
+                    objetivo.setPieza(mover);
+
+                    Pieza captured = tab.tabla[enemigoFila][enemigoColumna].getPieza();
                     tab.tabla[enemigoFila][enemigoColumna].setPieza(new Pieza('-'));
                     tab.tabla[enemigoFila][enemigoColumna].quitarPieza();
-                    return true;
-                }
-            }
-        }
-        
-
-        
-        //Enroque, todas las contidiciones ya estan validadas, solo verificar si el rey se ha movido a una casilla de posible enroque....e intercambiar
-        if (pieza.getPieza().obtenerNombreClase().equals("Rey")) {
-            if (Math.abs(pieza.getY() - y) == 2) { // Enroque detectado
-                int torreColumna = (y > pieza.getY()) ? 7 : 0; // Determina si es enroque corto o largo
-                int nuevaTorreColumna = (y > pieza.getY()) ? y - 1 : y + 1; 
-                Casilla torreCasilla = tab.tabla[pieza.getX()][torreColumna];
-                
-                if (torreCasilla.tienePieza() && torreCasilla.getPieza().obtenerNombreClase().equals("Torre")) {
-
-                    
-                    Pieza torre = torreCasilla.getPieza();
-                    Casilla nuevaTorreCasilla = tab.tabla[pieza.getX()][nuevaTorreColumna];
-                    
-                    // Crear una copia del tablero para simular el enroque
-                    Tablero copiaTablero = new Tablero(this.tabla);
-                    Casilla copiaReyCasilla = copiaTablero.tabla[pieza.getX()][pieza.getY()];
-                    Casilla copiaReyDestino = copiaTablero.tabla[x][y];
-                    Casilla copiaTorreCasilla = copiaTablero.tabla[pieza.getX()][torreColumna];
-                    Casilla copiaNuevaTorreCasilla = copiaTablero.tabla[pieza.getX()][nuevaTorreColumna];
-
-                    Pieza reyCopia = copiaReyCasilla.getPieza();
-                    Pieza torreCopia = copiaTorreCasilla.getPieza();
-
-                    // Simular el movimiento en el tablero copiado
-                    copiaReyCasilla.setPieza(new Pieza('-'));
-                    copiaReyCasilla.quitarPieza();
-                    copiaReyDestino.setPieza(reyCopia);
-                    copiaTorreCasilla.setPieza(new Pieza('-'));
-                    copiaTorreCasilla.quitarPieza();
-                    copiaNuevaTorreCasilla.setPieza(torreCopia);
-
-                    // Verificar si el movimiento deja al rey en jaque
-                    boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
-
-                    if (sigueJaque) {
-                        return false; // Enroque inválido si el rey queda en jaque
-                    }
-
-                    // Movimiento de la torre
-                    torreCasilla.quitarPieza();
-                    torreCasilla.setPieza(new Pieza('-'));
-                    nuevaTorreCasilla.setPieza(torre);
-                    torre.setX(pieza.getX());
-                    torre.setY(nuevaTorreColumna);
-                    
-                    
-                    //Movimiento del rey            
-                    pieza.setPieza(new Pieza('-'));
-                    pieza.quitarPieza();
-                    objetivo.setPieza(mover);
-                    
+                    lastMoveWasCapture = true;
+                    addCaptured(captured, jugador);
                     return true;
                 }
             }
         }
 
+        // Castling (already validated by legal move filter; just move rook accordingly)
+        if (mover instanceof Rey && Math.abs(pieza.getY() - y) == 2) {
+            int torreColumna = (y > pieza.getY()) ? 7 : 0;
+            int nuevaTorreColumna = (y > pieza.getY()) ? y - 1 : y + 1;
+            Casilla torreCasilla = tab.tabla[pieza.getX()][torreColumna];
 
-        if(tab.tabla[x][y].tienePieza()){
-            if(tab.tabla[x][y].getPieza().getPlayer() == jugador){
-                System.out.println("nunca vas a ver este mensaje");
-                return false;
-            }else{
+            if (torreCasilla.tienePieza() && torreCasilla.getPieza() instanceof Torre) {
+                Pieza torre = torreCasilla.getPieza();
+                Casilla nuevaTorreCasilla = tab.tabla[pieza.getX()][nuevaTorreColumna];
+
+                // simulate
                 Tablero copiaTablero = new Tablero(this.tabla);
-                Casilla copiaOrigen = copiaTablero.tabla[pieza.getX()][pieza.getY()];
-                Casilla copiaDestino = copiaTablero.tabla[x][y];
+                Casilla copiaReyCasilla = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+                Casilla copiaReyDestino = copiaTablero.tabla[x][y];
+                Casilla copiaTorreCasilla = copiaTablero.tabla[pieza.getX()][torreColumna];
+                Casilla copiaNuevaTorreCasilla = copiaTablero.tabla[pieza.getX()][nuevaTorreColumna];
 
-                Pieza moverCopia = copiaOrigen.getPieza();
+                Pieza reyCopia = copiaReyCasilla.getPieza();
+                Pieza torreCopia = copiaTorreCasilla.getPieza();
 
-                // Simular captura en el tablero copiado
-                copiaOrigen.setPieza(new Pieza('-'));
-                copiaOrigen.quitarPieza();
-                copiaDestino.setPieza(moverCopia);
+                copiaReyCasilla.setPieza(new Pieza('-')); copiaReyCasilla.quitarPieza();
+                copiaReyDestino.setPieza(reyCopia);
+                copiaTorreCasilla.setPieza(new Pieza('-')); copiaTorreCasilla.quitarPieza();
+                copiaNuevaTorreCasilla.setPieza(torreCopia);
 
-                // Comprobar si el movimiento deja al rey en jaque
-                boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
+                boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
+                if (sigueJaque) return false;
 
-                if (sigueJaque) {
-                    System.out.println("Movimiento inválido: tu rey quedaría en jaque.");
-                    return false;
-                }
-                //Comer!
-                objetivo.setPieza(new Pieza('-'));
-                objetivo.quitarPieza();                
-                
-                //Movimiento
+                // Move rook
+                torreCasilla.quitarPieza();
+                torreCasilla.setPieza(new Pieza('-'));
+                nuevaTorreCasilla.setPieza(torre);
+
+                // Move king
                 pieza.setPieza(new Pieza('-'));
                 pieza.quitarPieza();
                 objetivo.setPieza(mover);
                 return true;
-
             }
         }
-        //clavada, jaque
+
+        // Capture
+        if (objetivo.tienePieza()) {
+            if (objetivo.getPieza().getPlayer() == jugador) return false;
+
+            Tablero copiaTablero = new Tablero(this.tabla);
+            Casilla copiaOrigen = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+            Casilla copiaDestino = copiaTablero.tabla[x][y];
+            Pieza moverCopia = copiaOrigen.getPieza();
+
+            copiaOrigen.setPieza(new Pieza('-')); copiaOrigen.quitarPieza();
+            copiaDestino.setPieza(moverCopia);
+
+            boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
+            if (sigueJaque) return false;
+
+            Pieza captured = objetivo.getPieza();
+            objetivo.setPieza(new Pieza('-')); objetivo.quitarPieza();
+            pieza.setPieza(new Pieza('-')); pieza.quitarPieza();
+            objetivo.setPieza(mover);
+
+            lastMoveWasCapture = true;
+            addCaptured(captured, jugador);
+            return true;
+        }
+
+        // Normal move
         Tablero copiaTablero = new Tablero(this.tabla);
         Casilla copiaOrigen = copiaTablero.tabla[pieza.getX()][pieza.getY()];
         Casilla copiaDestino = copiaTablero.tabla[x][y];
-
         Pieza moverCopia = copiaOrigen.getPieza();
 
-        // Simular el movimiento en el tablero copiado
-        copiaOrigen.setPieza(new Pieza('-'));
-        copiaOrigen.quitarPieza();
+        copiaOrigen.setPieza(new Pieza('-')); copiaOrigen.quitarPieza();
         copiaDestino.setPieza(moverCopia);
 
-        // Verificar si el rey queda en jaque tras el movimiento
-        boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, tabGUI, copiaTablero) : hayJaque(j2, j1, tabGUI, copiaTablero);
-        //JOptionPane.showMessageDialog(null, "Luego del movimento sigues en jaque? -> " + sigueJaque);
-        if (sigueJaque) {
-            System.out.println("Movimiento inválido: tu rey quedaría en jaque.");
-            return false;
-        }
+        boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
+        if (sigueJaque) return false;
 
-        //Movimiento!
-        pieza.setPieza(new Pieza('-'));
-        pieza.quitarPieza();
+        pieza.setPieza(new Pieza('-')); pieza.quitarPieza();
         objetivo.setPieza(mover);
-        
         return true;
-        
-
     }
+
+    private void addCaptured(Pieza captured, Player captor) {
+        if (captured == null) return;
+        Player white = (j1.isWhite()) ? j1 : j2;
+        if (captor == white) {
+            capturedByWhite.add(captured);
+        } else {
+            capturedByBlack.add(captured);
+        }
+    }
+
     public boolean validarMovimientoPieza(int x, int y, ArrayList<Pair> movimientosDisponibles){
         for(Pair parsito: movimientosDisponibles){
             if(parsito.X == x && parsito.Y == y){

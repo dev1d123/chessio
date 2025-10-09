@@ -72,15 +72,15 @@ public class Peon extends Pieza implements PiezaInterfaz{
                 res.add(new Pair(newX, newY));
             }
         }
-        // Captura al paso
+        // Captura al paso (opponent last move already provided in movJ2)
         if (!movJ2.isEmpty()) {
             Movimiento lastMove = movJ2.get(movJ2.size() - 1);
             if (lastMove.getPieza().equals("Peon") && Math.abs(lastMove.getInicioFila() - lastMove.getFinFila()) == 2) {
                 int enemigoFila = lastMove.getFinFila();
                 int enemigoColumna = lastMove.getFinColumna();
                 if (this.getX() == enemigoFila && Math.abs(this.getY() - enemigoColumna) == 1) {
-                    int capturaX = p.getPosicion() ? enemigoFila + 1 : enemigoFila - 1;
-                    if (posValida(capturaX, enemigoColumna)) {
+                    int capturaX = this.getPlayer().getPosicion() ? enemigoFila + 1 : enemigoFila - 1;
+                    if (posValida(capturaX, enemigoColumna) && !t.tabla[capturaX][enemigoColumna].tienePieza()) {
                         res.add(new Pair(capturaX, enemigoColumna));
                     }
                 }

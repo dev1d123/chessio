@@ -22,9 +22,8 @@ public class Rey extends Pieza implements PiezaInterfaz {
 
     @Override
     public ArrayList<Pair> getMovimientos(Tablero tabla, ArrayList<Movimiento> movJ1, ArrayList<Movimiento> movJ2) {
-        //si la torre 
         ArrayList<Pair> res = new ArrayList<>();
-        
+
         int[][] movimientos = {
             {1, 0}, {-1, 0}, {0, 1}, {0, -1},
             {1, 1}, {-1, -1}, {1, -1}, {-1, 1}
@@ -36,79 +35,69 @@ public class Rey extends Pieza implements PiezaInterfaz {
             if (posValida(newX, newY)) {
                 Casilla casilla = tabla.tabla[newX][newY];
                 if (!casilla.tienePieza() || casilla.getPieza().getPlayer() != this.getPlayer()) {
-                    res.add(new Pair(newX, newY));
+                    // King cannot move to attacked squares
+                    Player opponent = (this.getPlayer() == tabla.p1) ? tabla.p2 : tabla.p1;
+                    if (!Juego.isSquareAttacked(tabla, opponent, newX, newY)) {
+                        res.add(new Pair(newX, newY));
+                    }
                 }
             }
         }
-        Player j1 = this.getPlayer();
 
-        Player j2;
-        
-        if(j1 != tabla.p1){
-            j2 = tabla.p1;
-        }else{
-            j2 = tabla.p2;
+        // Castling
+        Player self = this.getPlayer();
+        Player opp = (self == tabla.p1) ? tabla.p2 : tabla.p1;
+        ArrayList<Movimiento> ownMoves = movJ1; // by contract of caller: own move list
+
+        if (!this.jaque && puedeHacerEnroque(ownMoves)) {
+            // Short castle
+            if (puedeEnrocar(tabla, ownMoves, true, opp)) {
+                res.add(new Pair(this.getX(), this.getY() + 2));
+            }
+            // Long castle
+            if (puedeEnrocar(tabla, ownMoves, false, opp)) {
+                res.add(new Pair(this.getX(), this.getY() - 2));
+            }
         }
 
-        if (puedeHacerEnroque(movJ1) && !this.jaque) {
-            /*
-            if(Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY(), movJ2, movJ1)){
-                
-                //return res;
-            }
-            */
-            if (puedeEnrocarCorto(tabla, movJ1)) {
-                //if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 1, movJ2, movJ1) &&
-                    //!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() + 2, movJ2, movJ1)) {
-                    res.add(new Pair(this.getX(), this.getY() + 2));
-                //}           
-            }
-            if (puedeEnrocarLargo(tabla, movJ1)) {
-                //if (!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() - 1, movJ2, movJ1) &&
-                    //!Juego.amenazaCasilla(j2, j1, tabla, this.getX(), this.getY() - 2, movJ2, movJ1)) {
-                    res.add(new Pair(this.getX(), this.getY() - 2));
-                //}         
-            }
-        }
-        
         return res;
     }
 
-
-    private boolean puedeHacerEnroque(ArrayList<Movimiento> movJ1){
-        //si la casilla esta amenazada
-        //si nunca aparece torre!
-        for(Movimiento mov: movJ1){
+    private boolean puedeHacerEnroque(ArrayList<Movimiento> ownMoves){
+        for(Movimiento mov: ownMoves){
             if(mov.getPieza().equals("Rey")) return false;
         }
         return true;
     }
 
-    private boolean puedeEnrocarCorto(Tablero tablero, ArrayList<Movimiento> movJ1) {
-        for (Movimiento mov : movJ1) {
-            if (mov.getPieza().equals("Torre")) {
-                if (mov.getInicioColumna() == this.getY() + 3) {
-                    return false;
-                }
-            }
-        }
-        return !tablero.tabla[this.getX()][this.getY() + 1].tienePieza() &&
-            !tablero.tabla[this.getX()][this.getY() + 2].tienePieza();
-    }
+    private boolean puedeEnrocar(Tablero tablero, ArrayList<Movimiento> ownMoves, boolean corto, Player opp) {
+        int row = this.getX();
+        int kingCol = this.getY();
+        int rookCol = corto ? 7 : 0;
 
-    private boolean puedeEnrocarLargo(Tablero tablero, ArrayList<Movimiento> movJ1) {
-        for (Movimiento mov : movJ1) {
-            if (mov.getPieza().equals("Torre")) {
-                if (mov.getInicioColumna() == this.getY() - 4) {
-                    return false;
-                }
-            }
+        // Rook exists and same color
+        Casilla rookSquare = tablero.tabla[row][rookCol];
+        if (!rookSquare.tienePieza() || !(rookSquare.getPieza() instanceof Torre) || rookSquare.getPieza().getPlayer() != this.getPlayer()) {
+            return false;
         }
-        return !tablero.tabla[this.getX()][this.getY() - 1].tienePieza() &&
-            !tablero.tabla[this.getX()][this.getY() - 2].tienePieza() &&
-            !tablero.tabla[this.getX()][this.getY() - 3].tienePieza();
-    }
+        // Rook hasn't moved
+        for (Movimiento mov : ownMoves) {
+            if (mov.getPieza().equals("Torre") && mov.getInicioFila()==row && mov.getInicioColumna()==rookCol) return false;
+        }
+        // Empty path between king and rook
+        int step = corto ? 1 : -1;
+        for (int c = kingCol + step; c != rookCol; c += step) {
+            if (tablero.tabla[row][c].tienePieza()) return false;
+        }
+        // Squares not attacked: current, intermediate, destination
+        int destCol = kingCol + (corto ? 2 : -2);
+        int midCol = kingCol + (corto ? 1 : -1);
+        if (Juego.isSquareAttacked(tablero, opp, row, kingCol)) return false;
+        if (Juego.isSquareAttacked(tablero, opp, row, midCol)) return false;
+        if (Juego.isSquareAttacked(tablero, opp, row, destCol)) return false;
 
+        return true;
+    }
 
     private boolean posValida(int fila, int columna) {
         return (fila >= 0 && columna >= 0 && fila <= 7 && columna <= 7);
