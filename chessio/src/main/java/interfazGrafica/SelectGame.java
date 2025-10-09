@@ -47,7 +47,7 @@ public class SelectGame extends JDialog {
         gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(localGameButton, gbc);
 
-        JButton onlineGameButton = new JButton("Juego Online");
+        JButton onlineGameButton = new JButton("Juego con bot");
         onlineGameButton.setFont(new Font("Arial", Font.BOLD, 16));
         onlineGameButton.setBackground(new Color(50, 150, 250));
         onlineGameButton.setForeground(Color.WHITE);

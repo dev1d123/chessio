@@ -39,6 +39,9 @@ public class TableroGUI extends JFrame {
     // Use Swing timer explicitly to avoid clash with java.util.Timer
     private javax.swing.Timer swingClockTimer;
 
+    // Add back button
+    private JButton btnBack = new JButton("Atrás");
+
     public TableroGUI(Juego juego, boolean help, int textures, boolean time) {
         this.textureID = textures;
         this.juego = juego;
@@ -173,6 +176,17 @@ public class TableroGUI extends JFrame {
 
     private void initHUD() {
         lblTurno.setFont(lblTurno.getFont().deriveFont(Font.BOLD));
+
+        // Back button -> notify game as tablas and wake the selection wait
+        btnBack.addActionListener(e -> {
+            if (juego != null) {
+                juego.solicitarTablasPorAtras(this);
+            }
+        });
+
+        // Place Back button first
+        topHud.add(btnBack);
+        topHud.add(Box.createHorizontalStrut(8));
         topHud.add(lblTurno);
         topHud.add(Box.createHorizontalStrut(16));
         topHud.add(lblWhiteClock);

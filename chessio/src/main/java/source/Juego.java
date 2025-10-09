@@ -14,6 +14,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import interfazGrafica.PromocionDialog;
 import interfazGrafica.TableroGUI;
@@ -43,6 +44,7 @@ public class Juego {
     private final Map<String, Integer> repetition = new HashMap<>();
     private boolean lastMoveWasCapture = false;
     private boolean lastMoveWasPawnMove = false;
+    private volatile boolean tablasPorAtras = false;
     //Clase jugador
 
     //paths -> texturas....
@@ -120,9 +122,17 @@ public class Juego {
             Casilla selectedPiece = null;
             ArrayList<Pair> availableMoves = new ArrayList<>();
             Pair initialPos = new Pair();
+            boolean abortedLocal = false; // back -> tablas
+
             while (true) {
                 if (selectedPiece == null) {
                     Pair selection = tab.seleccionarElemento();
+                    // Back button sentinel or flag
+                    if (tablasPorAtras || (selection != null && selection.X == -1 && selection.Y == -1)) {
+                        JOptionPane.showMessageDialog(null, "Tablas (regresar).", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                        abortedLocal = true;
+                        break;
+                    }
                     selectedPiece = seleccionarPieza(currentPlayer, selection.X, selection.Y);
 
                     if (selectedPiece != null) {
@@ -139,6 +149,12 @@ public class Juego {
                     }
                 } else {
                     Pair selection = tab.seleccionarElemento();
+                    // Back button sentinel or flag
+                    if (tablasPorAtras || (selection != null && selection.X == -1 && selection.Y == -1)) {
+                        JOptionPane.showMessageDialog(null, "Tablas (regresar).", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                        abortedLocal = true;
+                        break;
+                    }
 
                     Casilla newSelection = seleccionarPieza(currentPlayer, selection.X, selection.Y);
                     if (newSelection != null && newSelection != selectedPiece) {
@@ -212,12 +228,24 @@ public class Juego {
                     }
                 }
             }
-    
-            tab.reload();
-            tabla.imprimirTabla();
-            turno++;
+
+            if (abortedLocal) {
+                end = true;
+            } else {
+                tab.reload();
+                tabla.imprimirTabla();
+                turno++;
+            }
         } while (!end);
         tab.dispose();
+    }
+
+    // Called by GUI Back button: mark draw and wake selection wait
+    public void solicitarTablasPorAtras(TableroGUI tab) {
+        this.tablasPorAtras = true;
+        if (tab != null) {
+            tab.notificarSeleccion(new Pair(-1, -1));
+        }
     }
 
     private void updateHUD(TableroGUI tab, Player toMove) {
@@ -584,24 +612,22 @@ public class Juego {
         lastMoveWasCapture = false;
         lastMoveWasPawnMove = (mover instanceof Peon);
 
-        // PROMOTION (allow capture on target as well)
+        // PROMOTION (use custom dialog; allow capture on target as well)
         if (mover instanceof Peon) {
-            int filaFinal = (jugador == ((j1.isWhite()) ? j1 : j2)) ? 0 : 7;
+            // FIX: promotion rank according to player's direction
+            int filaFinal = (jugador.getPosicion()) ? 7 : 0;
             if (x == filaFinal) {
-                String[] opciones = {"Torre", "Caballo", "Alfil", "Dama"};
-                int opcion = JOptionPane.showOptionDialog(
-                    null, "Selecciona la pieza para la promoción", "Promoción de Peón",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[3]
-                );
+                // Use the provided PromocionDialog centered on the game window
+                int opcion = PromocionDialog.mostrarDialogo(tabGUI); // 1=Torre, 2=Caballo, 3=Alfil, 4=Dama
                 Pieza nuevaPieza;
                 switch (opcion) {
-                    case 0 -> nuevaPieza = new Torre(x, y, jugador, text);
-                    case 1 -> nuevaPieza = new Caballo(x, y, jugador, text);
-                    case 2 -> nuevaPieza = new Alfil(x, y, jugador, text);
+                    case 1 -> nuevaPieza = new Torre(x, y, jugador, text);
+                    case 2 -> nuevaPieza = new Caballo(x, y, jugador, text);
+                    case 3 -> nuevaPieza = new Alfil(x, y, jugador, text);
                     default -> nuevaPieza = new Reina(x, y, jugador, text);
                 }
 
-                // simulate
+                // simulate on copy
                 Tablero copiaTablero = new Tablero(this.tabla);
                 Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
                 Casilla objetivoDespues = copiaTablero.tabla[x][y];
