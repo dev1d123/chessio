@@ -63,57 +63,8 @@ public class BackgroundPanel extends JPanel{
         buttonContainer.add(settingsButton);
 
         playButton.addActionListener(e -> {
-
-                setVisible(false);
-                parent.setVisible(false);
-
-                SelectGame sg = new SelectGame(parent);
-
-                boolean esJuegoLocal = sg.isLocalGame();
-
-            
-                if (esJuegoLocal) {
-                    System.out.println("El usuario seleccionó Juego Local.");
-                    
-                
-                } else {
-                    System.out.println("El usuario seleccionó Juego Online.");
-                    if (parent.getUserSelected() == null) {
-                        JOptionPane.showMessageDialog(null, "You must be registered to play.", "Error", JOptionPane.ERROR_MESSAGE); 
-                    }
-
-                }
-                System.out.println("Help Settings: " + parent.helpSettings);
-                System.out.println("Textures Settings: " + parent.texturesSettings);
-                System.out.println("Time Settings: " + parent.timeSettings);
-
-                SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        Juego j = new Juego(parent.texturesSettings);
-                        TableroGUI tablero = new TableroGUI(j, parent.helpSettings, parent.texturesSettings, parent.timeSettings);
-                        SwingUtilities.invokeLater(() ->
-                            JOptionPane.showMessageDialog(null, "El tablero ha sido creado")
-                        );
-
-                        j.iniciarJuego(tablero);
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-                        setVisible(true);
-                        parent.setVisible(true);
-                    }
-                };
-
-                worker.execute();
-                
-           
-
-
+            parent.onPlayClicked();
         });
-
 
         aboutButton.addActionListener(e -> {
             AboutUs ab = new AboutUs(parent);

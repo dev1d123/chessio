@@ -126,10 +126,37 @@ public class GameMenu extends JFrame{
         
         add(space, c);
 
+        // Add a Play button at the bottom/right area
+        /*
+        JButton playButton = new JButton("Play");
+        GridBagConstraints c2 = new GridBagConstraints();
+        c2.gridx = 1;
+        c2.gridy = 1;
+        c2.insets = new Insets(10, 10, 20, 20);
+        c2.anchor = GridBagConstraints.SOUTHEAST;
+        add(playButton, c2);
 
-        
-
+        playButton.addActionListener(e -> onPlayClicked());
+        */
     }
+
+    // Unifica la acción de "Play" (usada por el botón pequeño y el botón grande del menú)
+    public void onPlayClicked() {
+        SelectGame sel = new SelectGame(this);
+        source.Juego juego = new source.Juego(texturesSettings);
+
+        boolean isLocal = sel.isLocalGame();
+        if (!isLocal) {
+            boolean humanWhite = sel.isHumanPlaysWhite();
+            int depth = sel.getDifficultyDepth();
+            juego.configureVsBot(humanWhite, depth);
+        }
+        // HUD visible en ambos modos
+        TableroGUI gui = new TableroGUI(juego, helpSettings, texturesSettings, true);
+
+        new Thread(() -> juego.iniciarJuego(gui), isLocal ? "GameLoopLocal" : "GameLoopBot").start();
+    }
+
     public void setUserSelected(ProfileC perfil){
         this.userSelected = perfil;
     }

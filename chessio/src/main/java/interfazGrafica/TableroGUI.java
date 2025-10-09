@@ -23,6 +23,8 @@ public class TableroGUI extends JFrame {
     private JLabel lblTurno = new JLabel("Turno: -");
     private JLabel lblWhiteClock = new JLabel("Blancas: 10:00");
     private JLabel lblBlackClock = new JLabel("Negras: 10:00");
+    private JLabel lblBotSide = new JLabel(""); // muestra "blancas(bot)" o "negas(bot)"
+    private JLabel lblMode = new JLabel("Modo: Local"); // nuevo: muestra Local/Bot
     private JPanel panelCapturedWhite = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
     private JPanel panelCapturedBlack = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
 
@@ -38,6 +40,7 @@ public class TableroGUI extends JFrame {
 
     // Use Swing timer explicitly to avoid clash with java.util.Timer
     private javax.swing.Timer swingClockTimer;
+    private boolean showHUD; // controls HUD visibility (only for bot mode)
 
     // Add back button
     private JButton btnBack = new JButton("Atrás");
@@ -45,6 +48,8 @@ public class TableroGUI extends JFrame {
     public TableroGUI(Juego juego, boolean help, int textures, boolean time) {
         this.textureID = textures;
         this.juego = juego;
+        // Fuerza HUD visible en ambos modos
+        this.showHUD = true;
 
         buttons = new JButton[8][8];
 
@@ -60,11 +65,12 @@ public class TableroGUI extends JFrame {
         boardPanel = new JPanel(new GridLayout(8, 8));
         add(boardPanel, BorderLayout.CENTER);
 
+        // Siempre inicializa HUD
         initHUD(); // SOUTH
 
         createContents(juego.getTablero());
 
-        // Live clock updater on GUI only (Juego maintains official times)
+        // Live clock updater en GUI (siempre activo)
         swingClockTimer = new javax.swing.Timer(200, e -> setClocks(juego.getWhiteTimeLeftLive(), juego.getBlackTimeLeftLive()));
         swingClockTimer.start();
 
@@ -176,6 +182,8 @@ public class TableroGUI extends JFrame {
 
     private void initHUD() {
         lblTurno.setFont(lblTurno.getFont().deriveFont(Font.BOLD));
+        lblBotSide.setForeground(Color.DARK_GRAY);
+        lblMode.setForeground(Color.DARK_GRAY);
 
         // Back button -> notify game as tablas and wake the selection wait
         btnBack.addActionListener(e -> {
@@ -192,6 +200,12 @@ public class TableroGUI extends JFrame {
         topHud.add(lblWhiteClock);
         topHud.add(Box.createHorizontalStrut(8));
         topHud.add(lblBlackClock);
+        topHud.add(Box.createHorizontalStrut(16));
+        topHud.add(new JLabel("Modo: "));
+        topHud.add(lblMode);
+        topHud.add(Box.createHorizontalStrut(16));
+        topHud.add(new JLabel("Bot: "));
+        topHud.add(lblBotSide);
 
         JPanel capWhiteWrapper = new JPanel(new BorderLayout());
         capWhiteWrapper.add(new JLabel("Blancas capturaron: "), BorderLayout.WEST);
@@ -211,15 +225,28 @@ public class TableroGUI extends JFrame {
     }
 
     public void setTurno(String texto) {
+        if (!showHUD) return;
         lblTurno.setText(texto);
     }
 
+    public void setMode(String texto) {
+        if (!showHUD) return;
+        lblMode.setText(texto != null ? texto : "");
+    }
+
+    public void setBotLabel(String texto) {
+        if (!showHUD) return;
+        lblBotSide.setText(texto != null ? texto : "");
+    }
+
     public void setClocks(long whiteMs, long blackMs) {
+        if (!showHUD) return;
         lblWhiteClock.setText("Blancas: " + formatTime(whiteMs));
         lblBlackClock.setText("Negras: " + formatTime(blackMs));
     }
 
     public void setCapturadas(List<Pieza> captByWhite, List<Pieza> captByBlack) {
+        if (!showHUD) return;
         renderCaptured(panelCapturedWhite, captByWhite);
         renderCaptured(panelCapturedBlack, captByBlack);
         panelCapturedWhite.revalidate();

@@ -45,6 +45,13 @@ public class Juego {
     private boolean lastMoveWasCapture = false;
     private boolean lastMoveWasPawnMove = false;
     private volatile boolean tablasPorAtras = false;
+
+    private boolean vsBot = false;
+    private Player botSide = null;
+    private int botDepth = 3;
+    private final BotEngine botEngine = new BotEngine();
+    private boolean executingBotMove = false;
+
     //Clase jugador
 
     //paths -> texturas....
@@ -119,6 +126,83 @@ public class Juego {
             long moveStart = System.currentTimeMillis();
             turnStartMs = moveStart;
 
+            // BOT TURN
+            if (vsBot && currentPlayer == botSide) {
+                // compute in a thread (alpha-beta)
+                final BotEngine.AIMove[] holder = new BotEngine.AIMove[1];
+                Thread t = new Thread(() -> {
+                    ArrayList<Movimiento> own = (currentPlayer == j1) ? movJ1 : movJ2;
+                    ArrayList<Movimiento> opp = (currentPlayer == j1) ? movJ2 : movJ1;
+                    holder[0] = botEngine.computeBestMove(tabla, currentPlayer, own, opp, botDepth, 0);
+                });
+                t.start();
+                try { t.join(); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+
+                BotEngine.AIMove mv = holder[0];
+                if (mv == null) {
+                    // No moves: mate or stalemate
+                    boolean mate = hayJaqueMate((currentPlayer == white) ? black : white, currentPlayer, tab, tabla, turno);
+                    if (mate) {
+                        JOptionPane.showMessageDialog(null, "Jaque mate. Ganan " + ((currentPlayer == white) ? "negras" : "blancas"), "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Tablas.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    end = true;
+                } else {
+                    // Build available moves for validation
+                    Casilla from = tabla.tabla[mv.fromX][mv.fromY];
+                    ArrayList<Pair> pseudo = (currentPlayer == j1)
+                        ? from.getPieza().getMovimientos(tabla, movJ1, movJ2)
+                        : from.getPieza().getMovimientos(tabla, movJ2, movJ1);
+                    ArrayList<Pair> legales = filtrarLegales(from, pseudo, tabla, currentPlayer, tab);
+
+                    executingBotMove = true;
+                    boolean moved = (currentPlayer == j1)
+                        ? mover(from, mv.toX, mv.toY, legales, this.tabla, movJ1, movJ2, null)
+                        : mover(from, mv.toX, mv.toY, legales, this.tabla, movJ2, movJ1, null);
+                    executingBotMove = false;
+
+                    if (moved) {
+                        Movimiento m = new Movimiento(from.getPieza().obtenerNombreClase(), mv.fromX, mv.fromY, mv.toX, mv.toY);
+                        if (currentPlayer == j1) movJ1.add(m); else movJ2.add(m);
+
+                        long now = System.currentTimeMillis();
+                        long elapsed = now - moveStart;
+                        if (currentPlayer == white) whiteTimeLeft -= elapsed; else blackTimeLeft -= elapsed;
+
+                        if (whiteTimeLeft <= 0 || blackTimeLeft <= 0) {
+                            JOptionPane.showMessageDialog(null, "Tiempo agotado. Ganan " + (currentPlayer == white ? "negras" : "blancas"), "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                            end = true;
+                        }
+
+                        if (lastMoveWasCapture || lastMoveWasPawnMove) halfMoveClock = 0; else halfMoveClock++;
+                        Player nextToMove = (currentPlayer == white) ? black : white;
+                        updateRepetitionKey(tabla, nextToMove);
+
+                        boolean mate = hayJaqueMate(currentPlayer, (currentPlayer == white) ? black : white, tab, tabla, turno);
+                        boolean tablas = hayTablas(nextToMove, currentPlayer, tab, tabla);
+                        if (mate) {
+                            JOptionPane.showMessageDialog(null, "Jaque mate. Ganan " + (currentPlayer == white ? "blancas" : "negras"), "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                            end = true;
+                        } else if (tablas) {
+                            JOptionPane.showMessageDialog(null, "Tablas.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                            end = true;
+                        }
+
+                        updateHUD(tab, nextToMove);
+                        tab.reload();
+                        tabla.imprimirTabla();
+                        turno++;
+                    } else {
+                        // If move failed, end with tablas to avoid deadlock
+                        JOptionPane.showMessageDialog(null, "Tablas.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                        end = true;
+                    }
+                }
+                continue; // go to next outer loop iteration
+            }
+
+            // HUMAN TURN
             Casilla selectedPiece = null;
             ArrayList<Pair> availableMoves = new ArrayList<>();
             Pair initialPos = new Pair();
@@ -240,6 +324,13 @@ public class Juego {
         tab.dispose();
     }
 
+    // Enable bot mode: which side and depth (by difficulty)
+    public void setBotMode(Player botSide, int depth) {
+        this.vsBot = true;
+        this.botSide = botSide;
+        this.botDepth = Math.max(1, depth);
+    }
+
     // Called by GUI Back button: mark draw and wake selection wait
     public void solicitarTablasPorAtras(TableroGUI tab) {
         this.tablasPorAtras = true;
@@ -253,9 +344,19 @@ public class Juego {
         try {
             String turnoText = toMove.isWhite() ? "Turno: Blancas" : "Turno: Negras";
             tab.setTurno(turnoText);
-            // Use live clocks (tick while waiting)
             tab.setClocks(getWhiteTimeLeftLive(), getBlackTimeLeftLive());
             tab.setCapturadas(capturedByWhite, capturedByBlack);
+
+            // Modo
+            tab.setMode(vsBot ? "Bot" : "Local");
+
+            // Mostrar lado del bot en el HUD solo si aplica
+            if (vsBot && botSide != null) {
+                String botTxt = botSide.isWhite() ? "blancas(bot)" : "negas(bot)";
+                tab.setBotLabel(botTxt);
+            } else {
+                tab.setBotLabel("");
+            }
         } catch (Throwable ignore) {
             // compatibility
         }
@@ -612,13 +713,33 @@ public class Juego {
         lastMoveWasCapture = false;
         lastMoveWasPawnMove = (mover instanceof Peon);
 
-        // PROMOTION (use custom dialog; allow capture on target as well)
+        // PROMOTION
         if (mover instanceof Peon) {
-            // FIX: promotion rank according to player's direction
             int filaFinal = (jugador.getPosicion()) ? 7 : 0;
             if (x == filaFinal) {
-                // Use the provided PromocionDialog centered on the game window
-                int opcion = PromocionDialog.mostrarDialogo(tabGUI); // 1=Torre, 2=Caballo, 3=Alfil, 4=Dama
+                // Auto-queen for bot moves
+                if (executingBotMove) {
+                    Pieza nuevaPieza = new Reina(x, y, jugador, text);
+
+                    Tablero copiaTablero = new Tablero(this.tabla);
+                    Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
+                    Casilla objetivoDespues = copiaTablero.tabla[x][y];
+                    Pieza captured = objetivoDespues.tienePieza() ? objetivoDespues.getPieza() : null;
+
+                    antes.setPieza(new Pieza('-')); antes.quitarPieza();
+                    objetivoDespues.setPieza(nuevaPieza);
+
+                    boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
+                    if (sigueJaque) return false;
+
+                    if (captured != null) { lastMoveWasCapture = true; addCaptured(captured, jugador); }
+                    pieza.setPieza(new Pieza('-')); pieza.quitarPieza();
+                    objetivo.setPieza(nuevaPieza);
+                    return true;
+                }
+
+                // Human: show dialog as before
+                int opcion = PromocionDialog.mostrarDialogo(tabGUI);
                 Pieza nuevaPieza;
                 switch (opcion) {
                     case 1 -> nuevaPieza = new Torre(x, y, jugador, text);
@@ -627,7 +748,7 @@ public class Juego {
                     default -> nuevaPieza = new Reina(x, y, jugador, text);
                 }
 
-                // simulate on copy
+                // ...existing copy simulation, self-check, captured update and set...
                 Tablero copiaTablero = new Tablero(this.tabla);
                 Casilla antes = copiaTablero.tabla[pieza.getX()][pieza.getY()];
                 Casilla objetivoDespues = copiaTablero.tabla[x][y];
@@ -639,10 +760,7 @@ public class Juego {
                 boolean sigueJaque = (jugador == j2) ? hayJaque(j1, j2, null, copiaTablero) : hayJaque(j2, j1, null, copiaTablero);
                 if (sigueJaque) return false;
 
-                if (captured != null) {
-                    lastMoveWasCapture = true;
-                    addCaptured(captured, jugador);
-                }
+                if (captured != null) { lastMoveWasCapture = true; addCaptured(captured, jugador); }
                 pieza.setPieza(new Pieza('-')); pieza.quitarPieza();
                 objetivo.setPieza(nuevaPieza);
                 return true;
@@ -832,6 +950,15 @@ public class Juego {
             }
         }
         return false;
+    }
+
+    // Configurar modo vs bot desde la selección (color humano y profundidad)
+    public void configureVsBot(boolean humanPlaysWhite, int depth) {
+        this.vsBot = true;
+        Player white = (j1.isWhite()) ? j1 : j2;
+        Player black = (!j1.isWhite()) ? j1 : j2;
+        this.botSide = humanPlaysWhite ? black : white;
+        this.botDepth = Math.max(1, depth);
     }
 
 }

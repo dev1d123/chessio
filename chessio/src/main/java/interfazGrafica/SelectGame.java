@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 
 public class SelectGame extends JDialog {
     private boolean isLocalGame; 
+    private int difficultyDepth = 3; // default normal
+    private boolean humanPlaysWhite = true; // default
 
     public SelectGame(Frame parent) {
         super(parent, "Seleccionar Tipo de Juego", true);
@@ -69,6 +71,37 @@ public class SelectGame extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 isLocalGame = false; 
+                String[] opciones = {"Fácil", "Normal", "Difícil"};
+                int sel = JOptionPane.showOptionDialog(
+                    SelectGame.this,
+                    "Selecciona dificultad del bot",
+                    "Dificultad",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    opciones,
+                    opciones[1]
+                );
+                switch (sel) {
+                    case 0 -> difficultyDepth = 2; // Fácil
+                    case 2 -> difficultyDepth = 5; // Difícil
+                    default -> difficultyDepth = 3; // Normal
+                }
+
+                // Preguntar color del humano
+                String[] colores = {"Blancas", "Negras"};
+                int colorSel = JOptionPane.showOptionDialog(
+                    SelectGame.this,
+                    "¿Con qué color deseas jugar?",
+                    "Color",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    colores,
+                    colores[0]
+                );
+                humanPlaysWhite = (colorSel != 1); // 0->Blancas, 1->Negras
+
                 dispose();
             }
         });
@@ -81,5 +114,11 @@ public class SelectGame extends JDialog {
         return isLocalGame;
     }
 
+    public int getDifficultyDepth() {
+        return difficultyDepth;
+    }
 
+    public boolean isHumanPlaysWhite() {
+        return humanPlaysWhite;
+    }
 }
